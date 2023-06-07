@@ -113,7 +113,7 @@ class Scene(object):
         self._variation_index = 0
 
     def init_episode(self, index: int, randomly_place: bool=True,
-                     max_attempts: int = 5) -> List[str]:
+                     max_attempts: int = 5, seed=None) -> List[str]:
         """Calls the task init_episode and puts randomly in the workspace.
         """
 
@@ -125,6 +125,8 @@ class Scene(object):
         # Try a few times to init and place in the workspace
         attempts = 0
         descriptions = None
+        if seed is not None:
+            np.random.seed(seed)
         while attempts < max_attempts:
             descriptions = self.task.init_episode(index)
             try:

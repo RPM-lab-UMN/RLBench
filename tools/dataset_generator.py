@@ -23,7 +23,7 @@ from absl import flags
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('save_path',
-                    '/tmp/rlbench_data/',
+                    '/tmp/rlbench_data_3/',
                     'Where to save the demos.')
 flags.DEFINE_list('tasks', ['move_above'],
                   'The tasks to collect. If empty, all tasks are collected.')
@@ -32,15 +32,16 @@ flags.DEFINE_list('image_size', [128, 128],
 flags.DEFINE_enum('renderer',  'opengl3', ['opengl', 'opengl3'],
                   'The renderer to use. opengl does not include shadows, '
                   'but is faster.')
-flags.DEFINE_integer('processes', 3,
+flags.DEFINE_integer('processes', 4,
                      'The number of parallel processes during collection.')
-flags.DEFINE_integer('episodes_per_task', 64,
+flags.DEFINE_integer('episodes_per_task', 16,
                      'The number of episodes to collect per task.')
 flags.DEFINE_integer('variations', -1,
                      'Number of variations to collect per task. -1 for all.')
 flags.DEFINE_bool('all_variations', True,
                   'Include all variations when sampling epsiodes')
 
+SEED_START = 0
 
 def check_and_make(dir):
     if not os.path.exists(dir):
@@ -371,10 +372,10 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
             attempts = 10
             while attempts > 0:
                 try:
-                    variation = np.random.randint(possible_variations)
+                    variation = ex_idx % possible_variations
                     task_env = rlbench_env.get_task(t)
                     task_env.set_variation(variation)
-                    descriptions, obs = task_env.reset()
+                    descriptions, obs = task_env.reset(seed = SEED_START + ex_idx)
 
                     print('Process', i, '// Task:', task_env.get_name(),
                           '// Variation:', variation, '// Demo:', ex_idx)
@@ -452,8 +453,8 @@ def main(argv):
         [t.join() for t in processes]
 
     print('Data collection done!')
-    for i in range(FLAGS.processes):
-        print(result_dict[i])
+    # for i in range(FLAGS.processes):
+    #     print(result_dict[i])
 
 
 if __name__ == '__main__':

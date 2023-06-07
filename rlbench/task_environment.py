@@ -69,12 +69,12 @@ class TaskEnvironment(object):
     def variation_count(self) -> int:
         return self._task.variation_count()
 
-    def reset(self) -> (List[str], Observation):
+    def reset(self, seed=None) -> (List[str], Observation):
         self._scene.reset()
         try:
             desc = self._scene.init_episode(
                 self._variation_number, max_attempts=_MAX_RESET_ATTEMPTS,
-                randomly_place=not self._static_positions)
+                randomly_place=not self._static_positions, seed=seed)
         except (BoundaryError, WaypointError) as e:
             raise TaskEnvironmentError(
                 'Could not place the task %s in the scene. This should not '

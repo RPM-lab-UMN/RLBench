@@ -25,12 +25,14 @@ class MoveAbove(Task):
             DetectedCondition(self.tip, self.success_sensor)
         ])
 
-    def init_episode(self, index: int) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         # move robot to initial position
         j = np.array([1.90242633e-01, -1.82561681e-03, -1.74581066e-01, -2.33221745e+00, -1.09314790e-03,  2.26251936e+00,  8.01950991e-01])
         self.robot.arm.set_joint_positions(j, disable_dynamics=True)
 
         # spawn objects in the workspace
+        # if seed is not None:
+        #     np.random.seed(seed)
         self.boundary.clear()
         for ob in [self.block1, self.block2]:
             self.boundary.sample(ob, ignore_collisions=False, min_distance=0.16, 
