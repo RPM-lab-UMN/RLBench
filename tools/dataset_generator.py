@@ -23,7 +23,7 @@ from absl import flags
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('save_path',
-                    '/tmp/rlbench_data_3/',
+                    '/tmp/rlbench_data/',
                     'Where to save the demos.')
 flags.DEFINE_list('tasks', ['move_above'],
                   'The tasks to collect. If empty, all tasks are collected.')
@@ -32,9 +32,9 @@ flags.DEFINE_list('image_size', [128, 128],
 flags.DEFINE_enum('renderer',  'opengl3', ['opengl', 'opengl3'],
                   'The renderer to use. opengl does not include shadows, '
                   'but is faster.')
-flags.DEFINE_integer('processes', 4,
+flags.DEFINE_integer('processes', 1,
                      'The number of parallel processes during collection.')
-flags.DEFINE_integer('episodes_per_task', 16,
+flags.DEFINE_integer('episodes_per_task', 64,
                      'The number of episodes to collect per task.')
 flags.DEFINE_integer('variations', -1,
                      'Number of variations to collect per task. -1 for all.')
