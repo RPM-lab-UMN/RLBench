@@ -63,7 +63,13 @@ class MoveAbove(Task):
         sx = np.random.uniform(0.05, 0.1)
         sy = np.random.uniform(0.05, 0.1)
         sz = np.random.uniform(0.05, 0.1)
-        self.distractor = Shape.create(type=PrimitiveShape.CUBOID, size=[sx, sy, sz], position=[0, 0.15, 0.8], color=[0, 1, 0])
+        # type is a random choice from PrimitiveShape
+        type = np.random.choice(list(PrimitiveShape))
+        if type == PrimitiveShape.SPHERE:
+            size = [sz]
+        else:
+            size = [sx, sy, sz]
+        self.distractor = Shape.create(type=type, size=size, position=[0, 0.15, 0.8], color=[0, 1, 0])
         self.distractor.set_name('distractor')
 
         # spawn objects in the workspace
