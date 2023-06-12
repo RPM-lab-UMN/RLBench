@@ -23,7 +23,7 @@ from absl import flags
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('save_path',
-                    '/tmp/rlbench_data/',
+                    '/tmp/rlbench_data_eval/',
                     'Where to save the demos.')
 flags.DEFINE_list('tasks', ['move_above'],
                   'The tasks to collect. If empty, all tasks are collected.')
@@ -34,14 +34,14 @@ flags.DEFINE_enum('renderer',  'opengl3', ['opengl', 'opengl3'],
                   'but is faster.')
 flags.DEFINE_integer('processes', 1,
                      'The number of parallel processes during collection.')
-flags.DEFINE_integer('episodes_per_task', 64,
+flags.DEFINE_integer('episodes_per_task', 3,
                      'The number of episodes to collect per task.')
 flags.DEFINE_integer('variations', -1,
                      'Number of variations to collect per task. -1 for all.')
 flags.DEFINE_bool('all_variations', True,
                   'Include all variations when sampling epsiodes')
 
-SEED_START = 0
+SEED_START = 64
 
 def check_and_make(dir):
     if not os.path.exists(dir):
@@ -304,7 +304,7 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
     all the episodes_per_task for that variation."""
 
     # Initialise each thread with random seed
-    np.random.seed(None)
+    # np.random.seed(None)
     num_tasks = len(tasks)
 
     img_size = list(map(int, FLAGS.image_size))
@@ -383,7 +383,7 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
                     # TODO: for now we do the explicit looping.
                     demo, = task_env.get_demos(
                         amount=1,
-                        live_demos=True)
+                        live_demos=True, seed=SEED_START + ex_idx)
                 except Exception as e:
                     attempts -= 1
                     if attempts > 0:

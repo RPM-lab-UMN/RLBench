@@ -16,7 +16,7 @@ class MoveAbove(Task):
 
     def init_task(self) -> None:
         self.success_sensor = ProximitySensor('success1')
-        self.boundary = SpawnBoundary([Shape('plane')])
+        self.plane = Shape('plane')
         # blocks
         # self.block1 = Shape('block1')
         # self.block2 = Shape('block2')
@@ -32,17 +32,44 @@ class MoveAbove(Task):
 
     def init_episode(self, index: int, seed = None) -> List[str]:
         # move robot to initial position
-        j = np.array([1.90242633e-01, -1.82561681e-03, -1.74581066e-01, -2.33221745e+00, -1.09314790e-03,  2.26251936e+00,  8.01950991e-01])
+        # 0.25, 0, 1.0
+        # j = np.array([1.90242633e-01, -1.82561681e-03, -1.74581066e-01, -2.33221745e+00, -1.09314790e-03,  2.26251936e+00,  8.01950991e-01])
+        # 0.25, 0, 1.2
+        j = np.array([-0.58046514, -0.16537985,  0.54929668, -1.96424127,  0.08739433, 1.75281847,  0.73243582])
         self.robot.arm.set_joint_positions(j, disable_dynamics=True)
 
-        # if target or distractor exist, remove them
+        # if platform, target, or distractor exist, remove them
         try:
             target = Shape('target')
             target.remove()
             distractor = Shape('distractor')
             distractor.remove()
+            platform = Shape('platform')
+            platform.remove()
         except:
             pass
+        
+        # set random seed
+        if seed is not None:
+            # set seed
+            np.random.seed(seed)
+            # np.random = np.random.default_np.random(seed)
+            # np.random.seed(seed)
+            # print('epsiode seed: ', seed)
+        else:
+            print('no seed!')
+            # np.random = np.random.default_np.random()
+
+        # create platform of random height
+        platform_height = np.random.uniform(0.01, 0.2)
+        # create platform
+        platform = Shape.create(type=PrimitiveShape.CUBOID, size=[0.5, 0.5, platform_height], position=[0.35, 0, 0.75])
+        platform.set_color([0.5, 0.5, 0.5])
+        platform.set_name('platform')
+        # set the plane above the platform
+        self.plane.set_position([0.35, 0, 0.85 + platform_height/2])
+        # create spawn boundary
+        self.boundary = SpawnBoundary([self.plane])
 
         # create a target with random size
         sx = np.random.uniform(0.05, 0.1)
