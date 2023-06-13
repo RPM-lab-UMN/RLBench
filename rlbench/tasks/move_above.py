@@ -85,6 +85,8 @@ class MoveAbove(Task):
         self.target = Shape.create(type=type, size=size, position=[0, 0, 0.8], color=[1, 0, 0])
         # set the name of the object
         self.target.set_name('target')
+        # string of target object type
+        target_type = str(type).split('.')[1].lower()
 
         # create distractor object
         sx = np.random.uniform(0.05, 0.1)
@@ -98,6 +100,7 @@ class MoveAbove(Task):
             size = [sx, sy, sz]
         self.distractor = Shape.create(type=type, size=size, position=[0, 0.15, 0.8], color=[0, 1, 0])
         self.distractor.set_name('distractor')
+        distractor_type = str(type).split('.')[1].lower()
 
         # spawn objects in the workspace
         self.boundary.clear()
@@ -117,15 +120,15 @@ class MoveAbove(Task):
         if index == 0:
             color = 0
             self.target.set_color(colors[color][1])
-            text.append('move above the red object')
+            target_color = 'red'
         elif index == 1:
             color = 2
             self.target.set_color(colors[color][1])
-            text.append('move above the green object')
+            target_color = 'green'
         elif index == 2:
             color = 4
             self.target.set_color(colors[color][1])
-            text.append('move above the blue object')
+            target_color = 'blue'
 
         # move the sensor above the target
         self.waypoint0.set_position([target_pos[0], target_pos[1], target_pos[2] + target_height/2 + 0.025])
@@ -137,7 +140,26 @@ class MoveAbove(Task):
             color2 = np.random.choice(valid_idx)
         self.distractor.set_color(colors[color2][1])
 
-        return text
+        # generate all the text options
+        # move above the red object
+        # move above the red sphere
+        # move above the sphere
+        # go above...
+        lang_goals = []
+        text1 = ['move above the ', 'go above the ']
+        text2 = [target_color]
+        text3 = ['object', target_type]
+        for t1 in text1:
+            for t2 in text2:
+                for t3 in text3:
+                    lang_goals.append(t1 + t2 + ' ' + t3)
+        # add non-color commands if distractor is not the same shape
+        if distractor_type != target_type:
+            for t1 in text1:
+                lang_goals.append(t1 + text3[1])
+        lang_goal = np.random.choice(lang_goals)
+
+        return [lang_goal]
 
     def variation_count(self) -> int:
         return 3
