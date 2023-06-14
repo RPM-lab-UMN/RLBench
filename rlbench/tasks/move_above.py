@@ -157,9 +157,11 @@ class MoveAbove(Task):
         if distractor_type != target_type:
             for t1 in text1:
                 lang_goals.append(t1 + text3[1])
-        lang_goal = np.random.choice(lang_goals)
+        lang_goal_idx = np.random.choice(len(lang_goals))
+        # move lang_goal_idx to the front of the list
+        lang_goals.insert(0, lang_goals.pop(lang_goal_idx))
 
-        return [lang_goal]
+        return lang_goals
 
     def variation_count(self) -> int:
         return 3
