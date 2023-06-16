@@ -34,7 +34,7 @@ flags.DEFINE_enum('renderer',  'opengl3', ['opengl', 'opengl3'],
                   'but is faster.')
 flags.DEFINE_integer('processes', 1,
                      'The number of parallel processes during collection.')
-flags.DEFINE_integer('episodes_per_task', 64,
+flags.DEFINE_integer('episodes_per_task', 128,
                      'The number of episodes to collect per task.')
 flags.DEFINE_integer('variations', -1,
                      'Number of variations to collect per task. -1 for all.')
@@ -408,8 +408,9 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
                     # append description to text file
                     with open(os.path.join(
                             variation_path, 'descriptions.txt'), 'a') as f:
-                        # write language description
-                        f.write(descriptions[0] + '\n')
+                        # write language descriptions
+                        for desc in descriptions:
+                            f.write(str(ex_idx) + ', ' + desc + '\n')
 
                 break
             if abort_variation:
