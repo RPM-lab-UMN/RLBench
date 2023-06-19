@@ -59,11 +59,11 @@ class MoveFront(Task):
         # set target orientation
         self.target.set_orientation(target_orientation)
 
-        # if index is 0, move success in front of the blue cylinder
+        # if index is 0, move success in front of the cup
         text = []
         if index == 0:
             self.success_sensor.set_position([-0.05, 0, 0], relative_to=self.target)
-            text.append('move in front of the blue cylinder')
+            text.append('move in front of the blue cup')
         # if index is 1, move success in front of dispenser
         elif index == 1:
             self.success_sensor.set_position([.23, .335, 1.235])
