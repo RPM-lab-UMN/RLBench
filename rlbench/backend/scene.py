@@ -113,7 +113,7 @@ class Scene(object):
         self._variation_index = 0
 
     def init_episode(self, index: int, randomly_place: bool=True,
-                     max_attempts: int = 5, seed=None) -> List[str]:
+                     max_attempts: int = 5, seed=None, interactive=False) -> List[str]:
         """Calls the task init_episode and puts randomly in the workspace.
         """
 
@@ -129,7 +129,7 @@ class Scene(object):
         #     np.random.seed(seed)
         #     print('scene seed', seed)
         while attempts < max_attempts:
-            descriptions = self.task.init_episode(index, seed)
+            descriptions = self.task.init_episode(index, seed, interactive)
             try:
                 if (randomly_place and
                         not self.task.is_static_workspace()):
@@ -156,7 +156,7 @@ class Scene(object):
 
         arm, gripper = self._initial_robot_state
         self.pyrep.set_configuration_tree(arm)
-        self.pyrep.set_configuration_tree(gripper)
+        # self.pyrep.set_configuration_tree(gripper)
         self.robot.arm.set_joint_positions(self._start_arm_joint_pos, disable_dynamics=True)
         self.robot.arm.set_joint_target_velocities(
             [0] * len(self.robot.arm.joints))

@@ -17,20 +17,17 @@ class MoveFront(Task):
     def init_task(self) -> None:
         self.success_sensor = ProximitySensor('success1')
         self.plane = Shape('plane')
-        # blocks
-        # self.block1 = Shape('block1')
-        # self.block2 = Shape('block2')
         # waypoints
         self.waypoint0 = Dummy('waypoint0')
         self.tip = Dummy('Panda_tip')
-        # bowl
+        self.target = Shape('cup')
+        self.register_graspable_objects([self.target])
         self.register_success_conditions([
             DetectedCondition(self.tip, self.success_sensor)
         ])
-        self.target = Shape('cup')
         self.boundary = SpawnBoundary([self.plane])
 
-    def init_episode(self, index: int, seed = None) -> List[str]:
+    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
         # move robot to initial position
         # j = self.robot.arm.solve_ik_via_sampling([0.25, 0, 1.0], [np.pi, 0, np.pi])[0]
         # 0.25, 0, 1.0
@@ -58,16 +55,29 @@ class MoveFront(Task):
             self.pyrep.step()
         # set target orientation
         self.target.set_orientation(target_orientation)
+        # get target position
+        target_position = self.target.get_position()
 
         # if index is 0, move success in front of the cup
         text = []
         if index == 0:
-            self.success_sensor.set_position([-0.05, 0, 0], relative_to=self.target)
+            self.success_sensor.set_position([target_position[0]-0.05, target_position[1], target_position[2]])
             text.append('move in front of the blue cup')
+            # gripper should be open at the cup
+            self.robot.gripper.actuate(1, velocity=0.1)
+            for _ in range(3):
+                self.pyrep.step()
         # if index is 1, move success in front of dispenser
         elif index == 1:
             self.success_sensor.set_position([.23, .335, 1.235])
             text.append('move in front of the dispenser')
+            # gripper should be closed at the dispenser
+            self.robot.gripper.actuate(0, velocity=0.1)
+            for _ in range(3):
+                self.pyrep.step()
+        # if interactive move the success sensor out of the way
+        if interactive:
+            self.success_sensor.set_position([.23, .335, 1.0])
 
         return text
 
