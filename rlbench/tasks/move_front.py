@@ -16,7 +16,6 @@ class MoveFront(Task):
 
     def init_task(self) -> None:
         self.success_sensor = ProximitySensor('success1')
-        self.plane = Shape('plane')
         # waypoints
         self.waypoint0 = Dummy('waypoint0')
         self.tip = Dummy('Panda_tip')
@@ -25,7 +24,12 @@ class MoveFront(Task):
         self.register_success_conditions([
             DetectedCondition(self.tip, self.success_sensor)
         ])
-        self.boundary = SpawnBoundary([self.plane])
+        self.plane0 = Shape('plane0')
+        self.plane1 = Shape('plane1')
+        self.planes = [self.plane0, self.plane1]
+        self.boundary0 = SpawnBoundary([self.plane0])
+        self.boundary1 = SpawnBoundary([self.plane1])
+        self.boundaries = [self.boundary0, self.boundary1]
 
     def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
         # move robot to initial position
@@ -44,10 +48,17 @@ class MoveFront(Task):
 
         # get target orientation
         target_orientation = self.target.get_orientation()
+        # randomly select on of the boundaries
+        i = np.random.randint(0, len(self.boundaries))
+        boundary = self.boundaries[i]
+        # set target Z to boundary Z
+        target_position = self.target.get_position()
+        target_position[2] = self.planes[i].get_position()[2]
+        self.target.set_position(target_position)
         # spawn objects in the workspace
-        self.boundary.clear()
+        boundary.clear()
         for ob in [self.target]:
-            self.boundary.sample(ob, ignore_collisions=False, min_distance=0.16, 
+            boundary.sample(ob, ignore_collisions=False, min_distance=0.16, 
                                  min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
         
         # step the simulation
@@ -61,7 +72,7 @@ class MoveFront(Task):
         # if index is 0, move success in front of the cup
         text = []
         if index == 0:
-            self.success_sensor.set_position([target_position[0]-0.05, target_position[1], target_position[2]])
+            self.success_sensor.set_position([target_position[0]-0.05, target_position[1], target_position[2]+0.03])
             text.append('move in front of the blue cup')
             # gripper should be open at the cup
             self.robot.gripper.actuate(1, velocity=0.1)
@@ -71,8 +82,11 @@ class MoveFront(Task):
         elif index == 1:
             self.success_sensor.set_position([.23, .335, 1.235])
             text.append('move in front of the dispenser')
-            # gripper should be closed at the dispenser
-            self.robot.gripper.actuate(0, velocity=0.1)
+            # randomly set gripper open or closed to start
+            if np.random.randint(0, 2) == 0:
+                self.robot.gripper.actuate(0, velocity=0.1)
+            else:
+                self.robot.gripper.actuate(1, velocity=0.1)
             for _ in range(3):
                 self.pyrep.step()
         # if interactive move the success sensor out of the way

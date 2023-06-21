@@ -341,7 +341,7 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
     rlbench_env = Environment(
         action_mode=MoveArmThenGripper(JointVelocity(), Discrete()),
         obs_config=obs_config,
-        headless=True)
+        headless=False)
     rlbench_env.launch()
 
     task_env = None
