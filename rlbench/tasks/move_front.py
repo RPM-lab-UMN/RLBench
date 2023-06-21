@@ -80,7 +80,7 @@ class MoveFront(Task):
                 self.pyrep.step()
         # if index is 1, move success in front of dispenser
         elif index == 1:
-            self.success_sensor.set_position([.19, .335, 1.235])
+            self.success_sensor.set_position([.17, .335, 1.235])
             text.append('move in front of the dispenser')
             # randomly set gripper open or closed to start
             if np.random.randint(0, 2) == 0:
@@ -91,7 +91,7 @@ class MoveFront(Task):
                 self.pyrep.step()
         # if interactive move the success sensor out of the way
         if interactive:
-            self.success_sensor.set_position([.19, .335, 1.0])
+            self.success_sensor.set_position([.17, .335, 1.0])
 
         return text
 
