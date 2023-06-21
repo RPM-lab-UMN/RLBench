@@ -36,8 +36,8 @@ class MoveFront(Task):
         # j = self.robot.arm.solve_ik_via_sampling([0.25, 0, 1.0], [np.pi, 0, np.pi])[0]
         # 0.25, 0, 1.0
         # j = np.array([1.90242633e-01, -1.82561681e-03, -1.74581066e-01, -2.33221745e+00, -1.09314790e-03,  2.26251936e+00,  8.01950991e-01])
-        # 0.25, 0, 1.2
-        j = np.array([-0.08565323, -1.03495145,  0.12679109, -2.62085414,  0.39900205, 3.08864594,  0.49581817])
+        # 0.1, 0, 1.5 np.pi, np.pi/2, np.pi
+        j = np.array([ 0.51543331, -1.09951103, -0.3360858 , -2.50569105, -1.29321265, 2.7861464 ,  1.74406898])
         self.robot.arm.set_joint_positions(j, disable_dynamics=True)
         
         # set random seed
@@ -72,7 +72,7 @@ class MoveFront(Task):
         # if index is 0, move success in front of the cup
         text = []
         if index == 0:
-            self.success_sensor.set_position([target_position[0]-0.05, target_position[1], target_position[2]+0.03])
+            self.success_sensor.set_position([target_position[0]-0.05, target_position[1], target_position[2]+0.025])
             text.append('move in front of the blue cup')
             # gripper should be open at the cup
             self.robot.gripper.actuate(1, velocity=0.1)
@@ -80,7 +80,7 @@ class MoveFront(Task):
                 self.pyrep.step()
         # if index is 1, move success in front of dispenser
         elif index == 1:
-            self.success_sensor.set_position([.23, .335, 1.235])
+            self.success_sensor.set_position([.19, .335, 1.235])
             text.append('move in front of the dispenser')
             # randomly set gripper open or closed to start
             if np.random.randint(0, 2) == 0:
@@ -91,7 +91,7 @@ class MoveFront(Task):
                 self.pyrep.step()
         # if interactive move the success sensor out of the way
         if interactive:
-            self.success_sensor.set_position([.23, .335, 1.0])
+            self.success_sensor.set_position([.19, .335, 1.0])
 
         return text
 
