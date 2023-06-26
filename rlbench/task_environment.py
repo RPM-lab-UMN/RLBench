@@ -102,6 +102,17 @@ class TaskEnvironment(object):
         task_reward = self._task.reward()
         reward = float(success) if task_reward is None else task_reward
         return self._scene.get_observation(), reward, terminate
+    
+    def record_step(self, action) -> (Observation, int, bool):
+        # returns observation list, reward, done, info
+        if not self._reset_called:
+            raise RuntimeError(
+                "Call 'reset' before calling 'step' on a task.")
+        demo = self._action_mode.record_action(self._scene, action)
+        success, terminate = self._task.success()
+        task_reward = self._task.reward()
+        reward = float(success) if task_reward is None else task_reward
+        return demo, reward, terminate
 
     def get_demos(self, amount: int, live_demos: bool = False,
                   image_paths: bool = False,

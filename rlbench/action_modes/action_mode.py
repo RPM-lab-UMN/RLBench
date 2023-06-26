@@ -35,6 +35,19 @@ class MoveArmThenGripper(ActionMode):
         self.arm_action_mode.action(scene, arm_action, ignore_collisions)
         self.gripper_action_mode.action(scene, ee_action)
 
+    def record_action(self, scene: Scene, action: np.ndarray):
+        arm_act_size = np.prod(self.arm_action_mode.action_shape(scene))
+        arm_action = np.array(action[:arm_act_size])
+        ee_action = np.array(action[arm_act_size:arm_act_size+1])
+        ignore_collisions = bool(action[arm_act_size+1:arm_act_size+2])
+        # set callable each step
+        demo = []
+        self.arm_action_mode.set_callable_each_step(demo.append)
+        self.arm_action_mode.action(scene, arm_action, ignore_collisions)
+        self.gripper_action_mode.set_callable_each_step(demo.append)
+        self.gripper_action_mode.action(scene, ee_action)
+        return demo
+
     def action_shape(self, scene: Scene):
         return np.prod(self.arm_action_mode.action_shape(scene)) + np.prod(
             self.gripper_action_mode.action_shape(scene))

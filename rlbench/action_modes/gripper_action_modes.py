@@ -35,6 +35,10 @@ class Discrete(GripperActionMode):
                  detach_before_open: bool = True):
         self._attach_grasped_objects = attach_grasped_objects
         self._detach_before_open = detach_before_open
+        self._callable_each_step = None
+
+    def set_callable_each_step(self, callable_each_step):
+        self._callable_each_step = callable_each_step
 
     def _actuate(self, scene, action):
         done = False
@@ -42,6 +46,9 @@ class Discrete(GripperActionMode):
             done = scene.robot.gripper.actuate(action, velocity=0.2)
             scene.pyrep.step()
             scene.task.step()
+            if self._callable_each_step is not None:
+                # Record observations
+                self._callable_each_step(scene.get_observation())
 
     def action(self, scene: Scene, action: np.ndarray):
         assert_action_shape(action, self.action_shape(scene.robot))

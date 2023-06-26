@@ -448,6 +448,121 @@ class Scene(object):
             raise DemoError('Demo was completed, but was not successful.',
                             self.task)
         return Demo(demo)
+    
+    def record_action(self, record: bool = True,
+                 callable_each_step: Callable[[Observation], None] = None,
+                 randomly_place: bool = True) -> Demo:
+        """Returns a demo (list of observations)"""
+
+        demo = []
+        if record:
+            self.pyrep.step()  # Need this here or get_force doesn't work...
+            demo.append(self.get_observation())
+        while True:
+            success = False
+            self._ignore_collisions_for_current_waypoint = False
+            for i, point in enumerate(waypoints):
+                self._ignore_collisions_for_current_waypoint = point._ignore_collisions
+                point.start_of_path()
+                if point.skip:
+                    continue
+                grasped_objects = self.robot.gripper.get_grasped_objects()
+                colliding_shapes = [s for s in self.pyrep.get_objects_in_tree(
+                    object_type=ObjectType.SHAPE) if s not in grasped_objects
+                                    and s not in self._robot_shapes and s.is_collidable()
+                                    and self.robot.arm.check_arm_collision(s)]
+                [s.set_collidable(False) for s in colliding_shapes]
+                try:
+                    path = point.get_path()
+                    [s.set_collidable(True) for s in colliding_shapes]
+                except ConfigurationPathError as e:
+                    [s.set_collidable(True) for s in colliding_shapes]
+                    raise DemoError(
+                        'Could not get a path for waypoint %d.' % i,
+                        self.task) from e
+                ext = point.get_ext()
+                path.visualize()
+
+                done = False
+                success = False
+                while not done:
+                    done = path.step()
+                    self.step()
+                    self._demo_record_step(demo, record, callable_each_step)
+                    success, term = self.task.success()
+
+                point.end_of_path()
+
+                path.clear_visualization()
+
+                if len(ext) > 0:
+                    contains_param = False
+                    start_of_bracket = -1
+                    gripper = self.robot.gripper
+                    if 'open_gripper(' in ext:
+                        gripper.release()
+                        start_of_bracket = ext.index('open_gripper(') + 13
+                        contains_param = ext[start_of_bracket] != ')'
+                        if not contains_param:
+                            done = False
+                            while not done:
+                                done = gripper.actuate(1.0, 0.04)
+                                self.pyrep.step()
+                                self.task.step()
+                                if self._obs_config.record_gripper_closing:
+                                    self._demo_record_step(
+                                        demo, record, callable_each_step)
+                    elif 'close_gripper(' in ext:
+                        start_of_bracket = ext.index('close_gripper(') + 14
+                        contains_param = ext[start_of_bracket] != ')'
+                        if not contains_param:
+                            done = False
+                            while not done:
+                                done = gripper.actuate(0.0, 0.04)
+                                self.pyrep.step()
+                                self.task.step()
+                                if self._obs_config.record_gripper_closing:
+                                    self._demo_record_step(
+                                        demo, record, callable_each_step)
+
+                    if contains_param:
+                        rest = ext[start_of_bracket:]
+                        num = float(rest[:rest.index(')')])
+                        done = False
+                        while not done:
+                            done = gripper.actuate(num, 0.04)
+                            self.pyrep.step()
+                            self.task.step()
+                            if self._obs_config.record_gripper_closing:
+                                self._demo_record_step(
+                                    demo, record, callable_each_step)
+
+                    if 'close_gripper(' in ext:
+                        for g_obj in self.task.get_graspable_objects():
+                            gripper.grasp(g_obj)
+
+                    self._demo_record_step(demo, record, callable_each_step)
+
+            if not self.task.should_repeat_waypoints() or success:
+                break
+
+        # Some tasks may need additional physics steps
+        # (e.g. ball rowling to goal)
+        if not success:
+            for _ in range(10):
+                self.pyrep.step()
+                self.task.step()
+                self._demo_record_step(demo, record, callable_each_step)
+                success, term = self.task.success()
+                if success:
+                    break
+
+        success, term = self.task.success()
+        if not success:
+            raise DemoError('Demo was completed, but was not successful.',
+                            self.task)
+        return Demo(demo)
+
 
     def get_observation_config(self) -> ObservationConfig:
         return self._obs_config
