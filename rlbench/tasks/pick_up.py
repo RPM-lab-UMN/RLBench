@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 from pyrender import Primitive
 from rlbench.backend.task import Task
-from rlbench.backend.conditions import DetectedCondition, GraspedCondition
+from rlbench.backend.conditions import DetectedCondition, GraspedCondition, LiftedCondition
 from pyrep.objects.proximity_sensor import ProximitySensor
 from pyrep.objects.shape import Shape
 from rlbench.backend.spawn_boundary import SpawnBoundary
@@ -22,9 +22,6 @@ class PickUp(Task):
         self.tip = Dummy('Panda_tip')
         self.target = Shape('cup')
         self.register_graspable_objects([self.target])
-        self.register_success_conditions([
-            DetectedCondition(self.tip, self.success_sensor), GraspedCondition(self.robot.gripper, self.target), 
-        ])
         self.plane0 = Shape('plane0')
         self.plane1 = Shape('plane1')
         self.planes = [self.plane0, self.plane1]
@@ -79,6 +76,12 @@ class PickUp(Task):
             self.robot.gripper.actuate(1, velocity=0.1)
             for _ in range(3):
                 self.pyrep.step()
+
+        self.register_success_conditions([
+            DetectedCondition(self.tip, self.success_sensor), 
+            GraspedCondition(self.robot.gripper, self.target), 
+            LiftedCondition(self.target, self.target.get_position())
+        ])
 
         return ['pick up the blue cup']
 

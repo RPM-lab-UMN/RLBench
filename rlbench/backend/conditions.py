@@ -141,6 +141,23 @@ class FollowCondition(Condition):
             self._strikes = 0
             first = False
         return True, False
+    
+
+class LiftedCondition(Condition):
+    def __init__(self, obj: Object, start_pos,
+                 negated: bool = False):
+        self._obj = obj
+        self._start_pos = start_pos
+        self._negated = negated
+
+    def condition_met(self):
+        # get current object position
+        pos = self._obj.get_position()
+        # check if object is lifted
+        met = pos[2] > self._start_pos[2] + 0.025
+        if self._negated:
+            met = not met
+        return met, False
 
 
 class ConditionSet(Condition):
