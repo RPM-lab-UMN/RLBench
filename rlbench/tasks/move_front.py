@@ -82,11 +82,8 @@ class MoveFront(Task):
         elif index == 1:
             self.success_sensor.set_position([.17, .335, 1.235])
             text.append('move in front of the dispenser')
-            # randomly set gripper open or closed to start
-            if np.random.randint(0, 2) == 0:
-                self.robot.gripper.actuate(0, velocity=0.1)
-            else:
-                self.robot.gripper.actuate(1, velocity=0.1)
+            # always close gripper at dispenser
+            self.robot.gripper.actuate(0, velocity=0.1)
             for _ in range(3):
                 self.pyrep.step()
         # if interactive move the success sensor out of the way
