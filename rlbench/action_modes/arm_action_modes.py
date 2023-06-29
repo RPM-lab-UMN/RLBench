@@ -260,8 +260,8 @@ class EndEffectorPoseViaPlanning(ArmActionMode):
                 self._callable_each_step(scene.get_observation())
             success, terminate = scene.task.success()
             # If the task succeeds while traversing path, then break early
-            if success and self._callable_each_step is None:
-                break
+            # if success and self._callable_each_step is None:
+            #     break
 
     def action_shape(self, scene: Scene) -> tuple:
         return 7,
