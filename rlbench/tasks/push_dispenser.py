@@ -60,12 +60,6 @@ class PushDispenser(Task):
         for ob in [self.target]:
             boundary.sample(ob, ignore_collisions=False, min_distance=0.16, 
                                  min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
-        
-        # step the simulation
-        for _ in range(3):
-            self.pyrep.step()
-        # set target orientation
-        self.target.set_orientation(target_orientation)
 
         # step the simulation
         for _ in range(3):
@@ -75,8 +69,7 @@ class PushDispenser(Task):
 
         # if index is 0, move success in front of the cup
         text = ['push the dispenser']
-        text.append('move in front of the dispenser')
-        # always close gripper at dispenser
+        # always close gripper at dispenser # TODO put the cup in the gripper?
         self.robot.gripper.actuate(0, velocity=0.1)
         for _ in range(3):
             self.pyrep.step()
