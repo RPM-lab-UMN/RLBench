@@ -129,7 +129,7 @@ class Scene(object):
         #     np.random.seed(seed)
         #     print('scene seed', seed)
         while attempts < max_attempts:
-            descriptions = self.task.init_episode(index, seed, interactive)
+            descriptions = self.task.init_episode(index, seed + attempts, interactive) # TODO increase seed to avoid duplicate
             try:
                 if (randomly_place and
                         not self.task.is_static_workspace()):
