@@ -368,6 +368,7 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
         check_and_make(episodes_path)
 
         abort_variation = False
+        idx_offset = 0
         for ex_idx in range(FLAGS.episodes_per_task):
             attempts = 10
             while attempts > 0:
@@ -375,7 +376,7 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
                     variation = ex_idx % possible_variations
                     task_env = rlbench_env.get_task(t)
                     task_env.set_variation(variation)
-                    descriptions, obs = task_env.reset(seed = SEED_START + ex_idx)
+                    descriptions, obs = task_env.reset(seed = SEED_START + ex_idx + idx_offset)
 
                     print('Process', i, '// Task:', task_env.get_name(),
                           '// Variation:', variation, '// Demo:', ex_idx)
@@ -386,6 +387,7 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
                         live_demos=True, seed=SEED_START + ex_idx)
                 except Exception as e:
                     attempts -= 1
+                    idx_offset += 1
                     if attempts > 0:
                         continue
                     problem = (
