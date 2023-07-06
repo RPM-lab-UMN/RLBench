@@ -13,7 +13,7 @@ class OpenFridge(Task):
         self.register_success_conditions(
             [JointCondition(Joint('top_joint'), np.deg2rad(70))])
 
-    def init_episode(self, index: int) -> List[str]:
+    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
         return ['open fridge',
                 'grip the handle and slide the fridge door open',
                 'open the fridge door']
