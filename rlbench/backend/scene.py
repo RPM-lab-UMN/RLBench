@@ -328,15 +328,16 @@ class Scene(object):
 
     def get_demo(self, record: bool = True,
                  callable_each_step: Callable[[Observation], None] = None,
-                 randomly_place: bool = True) -> Demo:
+                 randomly_place: bool = True,
+                 seed = None) -> Demo:
         """Returns a demo (list of observations)"""
 
-        if not self._has_init_task:
-            self.init_task()
-        if not self._has_init_episode:
-            self.init_episode(self._variation_index,
-                              randomly_place=randomly_place)
-        self._has_init_episode = False
+        # if not self._has_init_task:
+        #     self.init_task()
+        # if not self._has_init_episode:
+        #     self.init_episode(self._variation_index,
+        #                       randomly_place=randomly_place, seed=seed)
+        # self._has_init_episode = False
 
         waypoints = self.task.get_waypoints()
         if len(waypoints) == 0:

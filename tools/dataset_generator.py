@@ -25,7 +25,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('save_path',
                     '/tmp/rlbench_data/',
                     'Where to save the demos.')
-flags.DEFINE_list('tasks', ['move_front'],
+flags.DEFINE_list('tasks', ['kitchen_move_above'],
                   'The tasks to collect. If empty, all tasks are collected.')
 flags.DEFINE_list('image_size', [128, 128],
                   'The size of the images tp save.')
@@ -384,7 +384,7 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
                     # TODO: for now we do the explicit looping.
                     demo, = task_env.get_demos(
                         amount=1,
-                        live_demos=True, seed=SEED_START + ex_idx)
+                        live_demos=True, seed=SEED_START + ex_idx + idx_offset)
                 except Exception as e:
                     attempts -= 1
                     idx_offset += 1

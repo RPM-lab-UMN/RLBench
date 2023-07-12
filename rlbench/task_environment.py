@@ -156,13 +156,14 @@ class TaskEnvironment(object):
                 # self.reset(seed)
                 try:
                     demo = self._scene.get_demo(
-                        callable_each_step=callable_each_step)
+                        callable_each_step=callable_each_step, seed=seed)
                     demo.random_seed = random_seed
                     demos.append(demo)
                     break
                 except Exception as e:
                     attempts -= 1
-                    logging.info('Bad demo. ' + str(e) + ' Attempts left: ' + str(attempts))
+                    raise RuntimeError('Bad demo')
+                    # logging.info('Bad demo. ' + str(e) + ' Attempts left: ' + str(attempts))
             if attempts <= 0:
                 raise RuntimeError(
                     'Could not collect demos. Maybe a problem with the task?')

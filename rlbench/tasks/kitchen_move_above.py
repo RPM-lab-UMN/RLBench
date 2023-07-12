@@ -20,6 +20,7 @@ class KitchenMoveAbove(Task):
         self.waypoint0 = Dummy('waypoint0')
         self.tip = Dummy('Panda_tip')
         self.pot = Shape('pot')
+        self.pot_ori = self.pot.get_orientation()
         self.plate = Shape('plate')
         self.apple = Shape('apple')
         self.register_graspable_objects([self.apple, self.pot, self.plate])
@@ -29,6 +30,8 @@ class KitchenMoveAbove(Task):
         self.plane0 = Shape('plane0')
         self.plane1 = Shape('plane1')
         self.plane_fridge = Shape('plane_fridge')
+        self.plane_plate = Shape('plane_plate')
+        self.boundary_plate = SpawnBoundary([self.plane_plate])
         self.planes = [self.plane0]
         self.boundary0 = SpawnBoundary([self.plane0])
         self.boundary1 = SpawnBoundary([self.plane1])
@@ -56,9 +59,10 @@ class KitchenMoveAbove(Task):
             self.apple.set_position(plane_pos)
             # spawn pot between left and right burner
             plane_pos = self.plane1.get_position()
-            self.pot.set_position([plane_pos[0], plane_pos[1], plane_pos[2] + 0.05])
+            self.pot.set_position([plane_pos[0], plane_pos[1], plane_pos[2] + 0.07])
             self.boundary1.clear()
             self.boundary1.sample(self.pot, ignore_collisions=True, min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
+            self.pot.set_orientation([-1.5707804 , -0.78361762, -1.57077372])
             # step the simulation
             for _ in range(3):
                 self.pyrep.step()
@@ -100,7 +104,7 @@ class KitchenMoveAbove(Task):
             self.boundary1.sample(self.plate, ignore_collisions=True, min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
             # put waypoint0 above the plate
             plate_pos = self.plate.get_position()
-            self.waypoint0.set_position([plate_pos[0], plate_pos[1], plate_pos[2] + 0.11])
+            self.waypoint0.set_position([plate_pos[0], plate_pos[1], plate_pos[2] + 0.08])
             text = ['move above the plate']
 
         return text
