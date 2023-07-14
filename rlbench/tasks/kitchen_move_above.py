@@ -11,6 +11,7 @@ from rlbench.const import colors
 import numpy as np
 from pyrep.const import PrimitiveShape
 import time
+from pyrep.objects.joint import Joint
 
 class KitchenMoveAbove(Task):
 
@@ -45,7 +46,9 @@ class KitchenMoveAbove(Task):
         # 0.1, 0, 1.5 np.pi, np.pi/2, np.pi
         j = np.array([ 0.51543331, -1.09951103, -0.3360858 , -2.50569105, -1.29321265, 2.7861464 ,  1.74406898])
         self.robot.arm.set_joint_positions(j, disable_dynamics=True)
-        
+        # set fridge door open
+        Joint('fridge_joint').set_joint_position(0.25, disable_dynamics=True)
+
         # set random seed
         if seed is not None:
             np.random.seed(seed)
@@ -99,13 +102,18 @@ class KitchenMoveAbove(Task):
             self.pot.set_position([pot_pos[0], pot_pos[1], 0.0])
             # spawn plate between left and right burner
             plane_pos = self.plane1.get_position()
-            self.plate.set_position([plane_pos[0], plane_pos[1], plane_pos[2] + 0.01])
-            self.boundary1.clear()
-            self.boundary1.sample(self.plate, ignore_collisions=True, min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
+            # random x y offset
+            x_offset = np.random.uniform(-0.05, 0.02)
+            y_offset = np.random.uniform(-0.05, 0.05)
+            self.plate.set_position([plane_pos[0] + x_offset, plane_pos[1] + y_offset, plane_pos[2] + 0.01])
+            # step the simulation
+            for _ in range(3):
+                self.pyrep.step()
             # put waypoint0 above the plate
             plate_pos = self.plate.get_position()
             self.waypoint0.set_position([plate_pos[0], plate_pos[1], plate_pos[2] + 0.08])
             text = ['move above the plate']
+        self.pyrep.step()
 
         return text
 
