@@ -129,16 +129,25 @@ class Scene(object):
         #     np.random.seed(seed)
         #     print('scene seed', seed)
         while attempts < max_attempts:
-            if seed is not None:
-                descriptions = self.task.init_episode(index, seed, interactive) # TODO increase seed to avoid duplicate
-            else:
-                descriptions = self.task.init_episode(index, None, interactive)
+            # if seed is not None:
+            #     descriptions = self.task.init_episode(index, seed, interactive)
+            # else:
+            #     descriptions = self.task.init_episode(index, None, interactive)
             try:
                 if (randomly_place and
                         not self.task.is_static_workspace()):
                     self._place_task()
+                    if seed is not None:
+                        descriptions = self.task.init_episode(index, seed, interactive)
+                    else:
+                        descriptions = self.task.init_episode(index, None, interactive)
                     if self.robot.arm.check_arm_collision():
                         raise BoundaryError()
+                else:
+                    if seed is not None:
+                        descriptions = self.task.init_episode(index, seed, interactive)
+                    else:
+                        descriptions = self.task.init_episode(index, None, interactive)
                 self.task.validate()
                 break
             except (BoundaryError, WaypointError) as e:

@@ -27,7 +27,7 @@ class SweepToDustpanOfSize(Task):
                 Dummy('point2c')]
         }
 
-    def init_episode(self, index: int) -> List[str]:
+    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
         self._variation_index = index
         dustpan_size = self._dustpan_sizes[self._variation_index]
 
