@@ -18,7 +18,7 @@ class MeatOffGrill(Task):
         self._w1 = Dummy('waypoint1')
         self._w1z= self._w1.get_position()[2]
 
-    def init_episode(self, index: int) -> List[str]:
+    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
         conditions = [NothingGrasped(self.robot.gripper)]
         if index == 0:
             x, y, _ = self._chicken.get_position()

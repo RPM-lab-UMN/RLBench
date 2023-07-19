@@ -17,7 +17,7 @@ class TurnTap(Task):
         self.left_joint = Joint('left_joint')
         self.right_joint = Joint('right_joint')
 
-    def init_episode(self, index: int) -> List[str]:
+    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
         option = OPTIONS[index]
         if option == 'right':
             self.left_start.set_position(self.right_start.get_position())
