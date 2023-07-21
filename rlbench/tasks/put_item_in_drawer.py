@@ -21,7 +21,7 @@ class PutItemInDrawer(Task):
         self._item = Shape('item')
         self.register_graspable_objects([self._item])
 
-    def init_episode(self, index) -> List[str]:
+    def init_episode(self, index, seed = None, interactive=False) -> List[str]:
         option = self._options[index]
         anchor = self._anchors[index]
         self._waypoint1.set_position(anchor.get_position())

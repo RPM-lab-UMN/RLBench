@@ -19,7 +19,7 @@ class CloseJar(Task):
         self.boundary = Shape('spawn_boundary')
         self.conditions = [NothingGrasped(self.robot.gripper)]
 
-    def init_episode(self, index: int) -> List[str]:
+    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
         b = SpawnBoundary([self.boundary])
         for obj in self.jars:
             b.sample(obj, min_distance=0.01)
