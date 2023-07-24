@@ -9,7 +9,7 @@ from pyrep.objects.proximity_sensor import ProximitySensor
 from pyrep.objects.dummy import Dummy
 
 
-class LightBulbIn(Task):
+class LightBulbInMotions(Task):
 
     def init_task(self) -> None:
         self.bulbs_visual = [Shape('light_bulb%d' % i) for i in range(2)]
@@ -19,8 +19,30 @@ class LightBulbIn(Task):
         self.conditions = [NothingGrasped(self.robot.gripper)]
         self.register_graspable_objects(self.bulbs)
         self.boundary = Shape('spawn_boundary')
+        self.w0 = Dummy('waypoint0')
+        self.register_stop_at_waypoint(1)
+        self.sensor = ProximitySensor('sensor')
+        self.tip = Dummy('Panda_tip')
+        self.register_success_conditions([
+            DetectedCondition(self.tip, self.sensor)
+        ])
 
     def init_episode(self, index: int, seed=None) -> List[str]:
+        if index == len(colors):
+            lamp = True
+            text = 'move above the lamp'
+            # gripper should be closed above the lamp
+            while self.robot.gripper.get_open_amount()[0] > 0.01:
+                self.robot.gripper.actuate(0, velocity=0.1)
+                self.pyrep.step()
+            index = np.random.randint(0, len(colors))
+        else:
+            lamp = False
+            # gripper should be open
+            while self.robot.gripper.get_open_amount()[0] < 0.99:
+                self.robot.gripper.actuate(1, velocity=0.1)
+                self.pyrep.step()
+
         self._variation_index = index
         b = SpawnBoundary([self.boundary])
         for holder in self.holders:
@@ -38,26 +60,26 @@ class LightBulbIn(Task):
         self.holders[index % 2].set_color(target_color_rgb)
         other_index = {0: 1, 1: 0}
         self.holders[other_index[index % 2]].set_color(distractor_color_rgb)
-        self.register_success_conditions([DetectedCondition(
-                                              self.bulbs[index % 2],
-                                              ProximitySensor('success')),
-                                          NothingGrasped(self.robot.gripper)])
 
-        return ['screw in the %s light bulb' % target_color_name,
-                'screw the light bulb from the %s holder into the lamp'
-                % target_color_name,
-                'pick up the light bulb from the %s stand, lift it up to just '
-                'above the lamp, then screw it down into the lamp in a '
-                'clockwise fashion' % target_color_name,
-                'put the light bulb from the %s casing into the lamp'
-                % target_color_name]
+        if lamp:
+            # set waypoint0 above the lamp
+            base = Shape('lamp_base')
+            target_pos = base.get_position()
+            self.w0.set_position([target_pos[0], target_pos[1], target_pos[2] + 0.3])
+        else:
+            text = 'move above the %s bulb' % target_color_name
+            # set waypoint0 above the target bulb
+            target_pos = self.bulb_glass_visual[index % 2].get_position()
+            self.w0.set_position([target_pos[0], target_pos[1], target_pos[2] + 0.1])
+
+        return [text]
 
     def variation_count(self) -> int:
-        return len(colors)
+        return len(colors) + 1 # 1 for move above lamp
 
     def step(self) -> None:
         if DetectedCondition(self.bulbs[self._variation_index % 2],
-                                  ProximitySensor('success')).condition_met() \
+                                  ProximitySensor('sensor')).condition_met() \
                 == (True, True):
             self.bulb_glass_visual[self._variation_index % 2].set_color(
                 [1.0, 1.0, 0.0])

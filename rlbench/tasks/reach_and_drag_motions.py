@@ -4,9 +4,10 @@ from rlbench.const import colors
 from rlbench.backend.conditions import NothingGrasped, DetectedCondition
 from pyrep.objects.shape import Shape
 from pyrep.objects.proximity_sensor import ProximitySensor
+from pyrep.objects.dummy import Dummy
 
 
-class ReachAndDrag(Task):
+class ReachAndDragMotions(Task):
 
     def init_task(self) -> None:
         self.stick = Shape('stick')
@@ -16,10 +17,14 @@ class ReachAndDrag(Task):
         self.distractor1 = Shape('distractor1')
         self.distractor2 = Shape('distractor2')
         self.distractor3 = Shape('distractor3')
+        self.register_stop_at_waypoint(1)
+        self.sensor = ProximitySensor('sensor')
+        self.tip = Dummy('Panda_tip')
+        self.register_success_conditions([
+            DetectedCondition(self.tip, self.sensor)
+        ])
 
     def init_episode(self, index: int, seed=None) -> List[str]:
-        self.register_success_conditions([
-            DetectedCondition(self.cube, ProximitySensor('success0'))])
         color_name, color_rgb = colors[index]
         self.target.set_color(color_rgb)
 
@@ -32,14 +37,7 @@ class ReachAndDrag(Task):
         _, distractor3_rgb = colors[(index + 7) % len(colors)]
         self.distractor3.set_color(distractor3_rgb)
 
-        return ['use the stick to drag the cube onto the %s target'
-                % color_name,
-                'pick up the stick and use it to push or pull the cube '
-                'onto the %s target' % color_name,
-                'drag the block towards the %s square on the table top'
-                % color_name,
-                'grasping the stick by one end, pick it up and use the its '
-                'other end to move the block onto the %s target' % color_name]
+        return ['move above the stick']
 
     def variation_count(self) -> int:
         return len(colors)

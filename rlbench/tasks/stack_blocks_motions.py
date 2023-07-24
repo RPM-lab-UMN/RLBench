@@ -4,7 +4,7 @@ from pyrep.objects.shape import Shape
 from pyrep.objects.proximity_sensor import ProximitySensor
 from pyrep.objects.dummy import Dummy
 from rlbench.backend.task import Task
-from rlbench.backend.conditions import DetectedSeveralCondition
+from rlbench.backend.conditions import DetectedCondition
 from rlbench.backend.conditions import NothingGrasped
 from rlbench.backend.spawn_boundary import SpawnBoundary
 from rlbench.const import colors
@@ -13,7 +13,7 @@ MAX_STACKED_BLOCKS = 3
 DISTRACTORS = 4
 
 
-class StackBlocks(Task):
+class StackBlocksMotions(Task):
 
     def init_task(self) -> None:
         self.blocks_stacked = 0
@@ -28,10 +28,18 @@ class StackBlocks(Task):
 
         self.register_graspable_objects(self.target_blocks + self.distractors)
 
-        self.register_waypoint_ability_start(0, self._move_above_next_target)
         self.register_waypoint_ability_start(3, self._move_above_drop_zone)
         self.register_waypoint_ability_start(5, self._is_last)
         self.register_waypoints_should_repeat(self._repeat)
+
+        self.register_stop_at_waypoint(1)
+        self.sensor = ProximitySensor('success')
+        self.tip = Dummy('Panda_tip')
+        self.register_success_conditions([
+            DetectedCondition(self.tip, self.sensor)
+        ])
+        self.w0 = Dummy('waypoint0')
+        self.target_plane = Shape('stack_blocks_target_plane')
 
     def init_episode(self, index: int, seed=None) -> List[str]:
         # For each color, we want to have 2, 3 or 4 blocks stacked
@@ -40,13 +48,6 @@ class StackBlocks(Task):
         color_name, color_rgb = colors[color_index]
         for b in self.target_blocks:
             b.set_color(color_rgb)
-
-        success_detector = ProximitySensor(
-            'stack_blocks_success')
-        self.register_success_conditions([DetectedSeveralCondition(
-            self.target_blocks, success_detector, self.blocks_to_stack),
-            NothingGrasped(self.robot.gripper)
-        ])
 
         self.blocks_stacked = 0
         color_choices = np.random.choice(
@@ -60,20 +61,42 @@ class StackBlocks(Task):
         for block in self.target_blocks + self.distractors:
             b.sample(block, min_distance=0.1)
 
-        return ['stack %d %s blocks' % (self.blocks_to_stack, color_name),
-                'place %d of the %s cubes on top of each other'
-                % (self.blocks_to_stack, color_name),
-                'pick up and set down %d %s blocks on top of each other'
-                % (self.blocks_to_stack, color_name),
-                'build a tall tower out of %d %s cubes'
-                % (self.blocks_to_stack, color_name),
-                'arrange %d %s blocks in a vertical stack on the table top'
-                % (self.blocks_to_stack, color_name),
-                'set %d %s cubes on top of each other'
-                % (self.blocks_to_stack, color_name)]
+        # get the y positions of the target blocks
+        target_block_ys = [block.get_position()[1] for block in self.target_blocks]
+
+        if index % 3 == 0:
+            # go for left
+            text = 'move above the left %s block' % color_name
+            # put waypoint0 above the leftmost target block
+            # get the index of the largest y
+            left_index = np.argmax(target_block_ys)
+            pose = self.target_blocks[left_index].get_pose()
+            self.w0.set_pose(pose)
+            # move waypoint0 up
+            self.w0.set_position([pose[0], pose[1], pose[2]+0.1])
+        elif index % 3 == 1:
+            # go for right
+            text = 'move above the right %s block' % color_name
+            # put waypoint0 above the rightmost target block
+            # get the index of the largest y
+            right_index = np.argmin(target_block_ys)
+            pose = self.target_blocks[right_index].get_pose()
+            self.w0.set_pose(pose)
+            # move waypoint0 up
+            self.w0.set_position([pose[0], pose[1], pose[2]+0.1])
+        else:
+            # go for platform
+            text = 'move above the platform'
+            # put waypoint0 above the platform
+            pose = self.target_plane.get_pose()
+            self.w0.set_pose(pose)
+            # move waypoint0 up
+            self.w0.set_position([pose[0], pose[1], pose[2]+0.2])
+
+        return text
 
     def variation_count(self) -> int:
-        return len(colors) * MAX_STACKED_BLOCKS
+        return len(colors) * 3 # 3 for left, right, platform
 
     def _move_above_next_target(self, _):
         if self.blocks_stacked >= self.blocks_to_stack:

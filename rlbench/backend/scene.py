@@ -138,16 +138,16 @@ class Scene(object):
                         not self.task.is_static_workspace()):
                     self._place_task()
                     if seed is not None:
-                        descriptions = self.task.init_episode(index, seed, interactive)
+                        descriptions = self.task.init_episode(index, seed)
                     else:
-                        descriptions = self.task.init_episode(index, None, interactive)
+                        descriptions = self.task.init_episode(index, None)
                     if self.robot.arm.check_arm_collision():
                         raise BoundaryError()
                 else:
                     if seed is not None:
-                        descriptions = self.task.init_episode(index, seed, interactive)
+                        descriptions = self.task.init_episode(index, seed)
                     else:
-                        descriptions = self.task.init_episode(index, None, interactive)
+                        descriptions = self.task.init_episode(index, None)
                 self.task.validate()
                 break
             except (BoundaryError, WaypointError) as e:
