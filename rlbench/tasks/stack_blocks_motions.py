@@ -93,7 +93,7 @@ class StackBlocksMotions(Task):
             # move waypoint0 up
             self.w0.set_position([pose[0], pose[1], pose[2]+0.2])
 
-        return text
+        return [text] 
 
     def variation_count(self) -> int:
         return len(colors) * 3 # 3 for left, right, platform

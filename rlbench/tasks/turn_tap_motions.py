@@ -32,7 +32,7 @@ class TurnTapMotions(Task):
             self.left_end.set_position(self.right_end.get_position())
             self.left_end.set_orientation(self.right_end.get_orientation())
 
-        return ['move %s tap' % option]
+        return ['move to the %s tap' % option]
 
     def variation_count(self) -> int:
         return 2
