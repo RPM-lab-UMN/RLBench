@@ -25,6 +25,13 @@ class CloseJarMotions(Task):
         ])
 
     def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+        if index >= len(colors):
+            text = 'move above the lid'
+            index -= len(colors)
+            lid = True
+        else:
+            lid = False
+
         b = SpawnBoundary([self.boundary])
         for obj in self.jars:
             b.sample(obj, min_distance=0.01)
@@ -42,12 +49,21 @@ class CloseJarMotions(Task):
         other_index = {0: 1, 1: 0}
         self.jars[other_index[index % 2]].set_color(distractor_color_rgb)
         w0 = Dummy('waypoint0')
+
+        if lid:
+            # move waypoint 0 to lid
+            w_lid = Dummy('waypoint_lid')
+            w0.set_pose(w_lid.get_pose())
+        else:
+            text = 'move above the %s jar' % target_color_name
+            # move waypoint 0 to jar (w3)
+            w0.set_pose(w3.get_pose())
         # set orientation to be consistent
         w0.set_orientation([-np.pi, 0, -np.pi], reset_dynamics=False)
-        return ['move above the lid']
+        return [text]
 
     def variation_count(self) -> int:
-        return len(colors)
+        return len(colors) * 2 # move above jar or lid for every color
 
     def cleanup(self) -> None:
         self.conditions = [NothingGrasped(self.robot.gripper)]

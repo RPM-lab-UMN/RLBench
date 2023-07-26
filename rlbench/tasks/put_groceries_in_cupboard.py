@@ -31,7 +31,7 @@ class PutGroceriesInCupboard(Task):
         self.register_graspable_objects(self.groceries)
         self.boundary = SpawnBoundary([Shape('workspace')])
 
-    def init_episode(self, index: int) -> List[str]:
+    def init_episode(self, index: int, seed=None) -> List[str]:
         self.boundary.clear()
         [self.boundary.sample(g, min_distance=0.1) for g in self.groceries]
         self.waypoint1.set_pose(self.grasp_points[index].get_pose())

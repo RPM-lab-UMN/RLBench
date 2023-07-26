@@ -65,7 +65,7 @@ class LightBulbInMotions(Task):
             # set waypoint0 above the lamp
             base = Shape('lamp_base')
             target_pos = base.get_position()
-            self.w0.set_position([target_pos[0], target_pos[1], target_pos[2] + 0.3])
+            self.w0.set_position([target_pos[0], target_pos[1], target_pos[2] + 0.4])
         else:
             text = 'move above the %s bulb' % target_color_name
             # set waypoint0 above the target bulb

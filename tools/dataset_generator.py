@@ -25,7 +25,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('save_path',
                     '/tmp/rlbench_data/',
                     'Where to save the demos.')
-flags.DEFINE_list('tasks', ['stack_blocks_motions'],
+flags.DEFINE_list('tasks', ['place_shape_motions'],
                   'The tasks to collect. If empty, all tasks are collected.')
 flags.DEFINE_list('image_size', [128, 128],
                   'The size of the images tp save.')

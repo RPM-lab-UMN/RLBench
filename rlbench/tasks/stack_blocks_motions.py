@@ -63,7 +63,10 @@ class StackBlocksMotions(Task):
 
         # get the y positions of the target blocks
         target_block_ys = [block.get_position()[1] for block in self.target_blocks]
-
+        # gripper open
+        while self.robot.gripper.get_open_amount()[0] < 0.99:
+            self.robot.gripper.actuate(1, velocity=0.1)
+            self.pyrep.step()
         if index % 3 == 0:
             # go for left
             text = 'move above the left %s block' % color_name
@@ -87,6 +90,10 @@ class StackBlocksMotions(Task):
         else:
             # go for platform
             text = 'move above the platform'
+            # gripper closed
+            while self.robot.gripper.get_open_amount()[0] > 0.01:
+                self.robot.gripper.actuate(0, velocity=0.1)
+                self.pyrep.step()
             # put waypoint0 above the platform
             pose = self.target_plane.get_pose()
             self.w0.set_pose(pose)
