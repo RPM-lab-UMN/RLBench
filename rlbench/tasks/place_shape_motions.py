@@ -1,3 +1,5 @@
+from cgitb import reset
+from re import T
 from typing import List
 from pyrep.objects.shape import Shape
 from pyrep.objects.dummy import Dummy
@@ -46,6 +48,14 @@ class PlaceShapeMotions(Task):
 
         self.boundary.clear()
         [self.boundary.sample(s, min_distance=0.05) for s in self.shapes]
+
+        # step sim to settle
+        for _ in range(3):
+            self.pyrep.step()
+
+        # set cylinder orientation
+        cylinder = self.shapes[1]
+        cylinder.set_orientation([0, 0, 0])
 
         if hole:
             # move waypoint 1 to the hole
