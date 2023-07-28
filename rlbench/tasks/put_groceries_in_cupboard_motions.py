@@ -54,11 +54,19 @@ class PutGroceriesInCupboardMotions(Task):
             # move waypoint 0 to cupboard
             w_cupboard = Dummy('waypoint3')
             self.w0.set_pose(w_cupboard.get_pose())
+            # gripper closed
+            while self.robot.gripper.get_open_amount()[0] > 0.01:
+                self.robot.gripper.actuate(0, velocity=0.1)
+                self.pyrep.step()
         else:
             # move waypoint 0 to grocery
             text = 'move above the %s' % GROCERY_NAMES[index]
             w_grocery = Dummy('waypoint_grocery')
             self.w0.set_pose(w_grocery.get_pose())
+            # gripper open
+            while self.robot.gripper.get_open_amount()[0] < 0.99:
+                self.robot.gripper.actuate(1, velocity=0.1)
+                self.pyrep.step()
 
         return [text]
 

@@ -54,8 +54,16 @@ class CloseJarMotions(Task):
             # move waypoint 0 to lid
             w_lid = Dummy('waypoint_lid')
             w0.set_pose(w_lid.get_pose())
+            # gripper open
+            while self.robot.gripper.get_open_amount()[0] < 0.99:
+                self.robot.gripper.actuate(1, velocity=0.1)
+                self.pyrep.step()
         else:
             text = 'move above the %s jar' % target_color_name
+            # gripper closed
+            while self.robot.gripper.get_open_amount()[0] > 0.01:
+                self.robot.gripper.actuate(0, velocity=0.1)
+                self.pyrep.step()
             # move waypoint 0 to jar (w3)
             w0.set_pose(w3.get_pose())
         # set orientation to be consistent

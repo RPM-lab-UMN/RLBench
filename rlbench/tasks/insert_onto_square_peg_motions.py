@@ -27,11 +27,11 @@ class InsertOntoSquarePegMotions(Task):
         self.w0 = Dummy('waypoint0')
 
     def init_episode(self, index: int, seed=None) -> List[str]:
-        if index == 0:
+        if index >= len(colors):
             text = 'move above the square ring'
             ring = True
+            index -= len(colors)
         else:
-            index -= 1
             ring = False
 
         color_name, color_rgb = colors[index]
@@ -57,14 +57,22 @@ class InsertOntoSquarePegMotions(Task):
             w_ring = Dummy('waypoint_ring')
             # set waypoint 0 to waypoint_ring pose
             self.w0.set_pose(w_ring.get_pose())
+            # gripper open
+            while self.robot.gripper.get_open_amount()[0] < 0.99:
+                self.robot.gripper.actuate(1, velocity=0.1)
+                self.pyrep.step()
         else:
             text = 'move above the %s peg' % color_name
             # move the sensor above the peg
             w_peg = Dummy('waypoint3')
             # set waypoint 0 to waypoint_peg pose
             self.w0.set_pose(w_peg.get_pose())
+            # gripper closed
+            while self.robot.gripper.get_open_amount()[0] > 0.01:
+                self.robot.gripper.actuate(0, velocity=0.1)
+                self.pyrep.step()
 
         return [text]
 
     def variation_count(self) -> int:
-        return len(colors) + 1 # +1 for the ring
+        return len(colors) * 2 # ring for all the colors

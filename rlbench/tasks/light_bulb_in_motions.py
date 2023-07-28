@@ -28,14 +28,14 @@ class LightBulbInMotions(Task):
         ])
 
     def init_episode(self, index: int, seed=None) -> List[str]:
-        if index == len(colors):
+        if index >= len(colors):
             lamp = True
             text = 'move above the lamp'
             # gripper should be closed above the lamp
             while self.robot.gripper.get_open_amount()[0] > 0.01:
                 self.robot.gripper.actuate(0, velocity=0.1)
                 self.pyrep.step()
-            index = np.random.randint(0, len(colors))
+            index = index - len(colors)
         else:
             lamp = False
             # gripper should be open
@@ -75,7 +75,7 @@ class LightBulbInMotions(Task):
         return [text]
 
     def variation_count(self) -> int:
-        return len(colors) + 1 # 1 for move above lamp
+        return len(colors) * 2 # move above the lamp for each color
 
     def step(self) -> None:
         if DetectedCondition(self.bulbs[self._variation_index % 2],

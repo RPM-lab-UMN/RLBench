@@ -193,7 +193,7 @@ class EndEffectorPoseViaPlanning(ArmActionMode):
         if not self._absolute_mode and self._frame != 'end effector':
             action = calculate_delta_pose(scene.robot, action)
         relative_to = None if self._frame == 'world' else scene.robot.arm.get_tip()
-        self._quick_boundary_check(scene, action)
+        # self._quick_boundary_check(scene, action)
 
         colliding_shapes = []
         if not ignore_collisions:

@@ -61,10 +61,19 @@ class PlaceShapeMotions(Task):
             # move waypoint 1 to the hole
             self._set_drop()
             text = 'move above the %s hole' % shape
+            # gripper closed
+            while self.robot.gripper.get_open_amount()[0] > 0.01:
+                self.robot.gripper.actuate(0, velocity=0.1)
+                self.pyrep.step()
         else:
             # move waypoint 1 to the shape
             self._set_grasp()
             text = 'move above the %s' % shape
+            # gripper open
+            while self.robot.gripper.get_open_amount()[0] < 0.99:
+                self.robot.gripper.actuate(1, velocity=0.1)
+                self.pyrep.step()
+
 
         return [text]
 
