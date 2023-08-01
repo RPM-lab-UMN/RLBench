@@ -28,8 +28,15 @@ class StackCupsMotions(Task):
         self.register_success_conditions([
             DetectedCondition(self.tip, self.sensor)
         ])
+        self.w0 = Dummy('waypoint0')
 
     def init_episode(self, index: int, seed=None) -> List[str]:
+        if index >= len(colors):
+            alot = True
+            index -= len(colors)
+        else:
+            alot = False
+
         self.variation_index = index
         target_color_name, target_rgb = colors[index]
 
@@ -54,11 +61,30 @@ class StackCupsMotions(Task):
                              min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
         self.boundary.sample(self.cup3, min_distance=0.05,
                              min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
+        
+        if alot:
+            text = 'move a lot above the left edge of the %s cup' % target_color_name
+            # set waypoint 0 pose to waypoint_alot_above pose
+            w_alot_above = Dummy('waypoint_alot_above')
+            self.w0.set_pose(w_alot_above.get_pose())
+            # gripper closed
+            while self.robot.gripper.get_open_amount()[0] > 0.01:
+                self.robot.gripper.actuate(0, velocity=0.1)
+                self.pyrep.step()
+        else:
+            text = 'move above the left edge of the %s cup' % target_color_name
+            # set waypoint 0 pose to waypoint_above pose
+            w_above = Dummy('waypoint_above')
+            self.w0.set_pose(w_above.get_pose())
+            # gripper open
+            while self.robot.gripper.get_open_amount()[0] < 0.99:
+                self.robot.gripper.actuate(1, velocity=0.1)
+                self.pyrep.step()
 
-        return ['move above the left edge of the %s cup' % target_color_name]
+        return [text]
 
     def variation_count(self) -> int:
-        return len(colors) 
+        return len(colors) * 2
     
     def base_rotation_bounds(self) -> Tuple[Tuple[float, float, float], Tuple[float, float, float]]:
         return ((0, 0, 0), (0, 0, 0))

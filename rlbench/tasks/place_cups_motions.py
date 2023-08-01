@@ -26,6 +26,13 @@ class PlaceCupsMotions(Task):
         self.register_graspable_objects(self._cups)
         self._initial_relative_cup = self._w1.get_pose(self._cups[0])
         self._initial_relative_spoke = self._w5.get_pose(self._spokes[0])
+        self.w0 = Dummy('waypoint0')
+        self.register_stop_at_waypoint(1)
+        self.sensor = ProximitySensor('sensor')
+        self.tip = Dummy('Panda_tip')
+        self.register_success_conditions([
+            DetectedCondition(self.tip, self.sensor),
+        ])
 
     def init_episode(self, index: int, seed=None) -> List[str]:
         self._cups_placed = 0
@@ -34,8 +41,30 @@ class PlaceCupsMotions(Task):
         [b.sample(c, min_distance=0.10) for c in self._cups]
 
         if index == 0:
+            # get max mug y position index
+            mug_y_positions = [self._cups[i].get_position()[1] for i in range(3)]
+            max_mug_y_position_index = np.argmax(mug_y_positions)
+            # set waypoint 1 parent
+            self._w1.set_parent(self._cups[max_mug_y_position_index])
+            self._w1.set_pose(
+                self._initial_relative_cup,
+                relative_to=self._cups[max_mug_y_position_index])
+            # move waypoint 0 to waypoint mug
+            w_mug = Dummy('waypoint_mug')
+            self.w0.set_pose(w_mug.get_pose())
+            # gripper open
+            while self.robot.gripper.get_open_amount()[0] < 0.99:
+                self.robot.gripper.actuate(1, velocity=0.1)
+                self.pyrep.step()
             return ['move above the left mug']
         else:
+            # move waypoint 0 to waypoint3
+            w3 = Dummy('waypoint3')
+            self.w0.set_pose(w3.get_pose())
+            # gripper closed
+            while self.robot.gripper.get_open_amount()[0] > 0.01:
+                self.robot.gripper.actuate(0, velocity=0.1)
+                self.pyrep.step()
             return ['move in front of the rack']
 
     def variation_count(self) -> int:
