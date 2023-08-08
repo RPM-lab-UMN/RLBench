@@ -26,6 +26,11 @@ class OpenDrawerMotions(Task):
         option = self._options[index]
         self._waypoint0.set_position(self._anchors[index].get_position())
         return ['move in front of the %s handle' % option]
+        # 1 move in front of the top handle
+        # 2 go in front of the upper handle
+        # 3 approach the highest handle from the front
+        # 4 align the gripper in front of the top handle
+        # 5 advance the arm toward the upper handle
 
     def variation_count(self) -> int:
         return 3

@@ -63,7 +63,8 @@ class Observation(object):
         self.gripper_open = gripper_open
         self.gripper_pose = gripper_pose
         self.gripper_matrix = gripper_matrix
-        self.gripper_joint_positions = gripper_joint_positions
+        self.gripper_joint_positions = None
+        # self.gripper_joint_positions = gripper_joint_positions
         self.gripper_touch_forces = gripper_touch_forces
         self.task_low_dim_state = task_low_dim_state
         self.ignore_collisions = ignore_collisions
