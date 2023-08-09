@@ -32,7 +32,7 @@ class ReachAndDrag(Task):
         _, distractor3_rgb = colors[(index + 7) % len(colors)]
         self.distractor3.set_color(distractor3_rgb)
 
-        return ['use the stick to drag the cube onto the %s target'
+        return ['use the stick to drag the block to the %s target'
                 % color_name,
                 'pick up the stick and use it to push or pull the cube '
                 'onto the %s target' % color_name,

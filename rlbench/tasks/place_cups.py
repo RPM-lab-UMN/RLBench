@@ -27,7 +27,7 @@ class PlaceCups(Task):
         self._initial_relative_cup = self._w1.get_pose(self._cups[0])
         self._initial_relative_spoke = self._w5.get_pose(self._spokes[0])
 
-    def init_episode(self, index: int) -> List[str]:
+    def init_episode(self, index: int, seed=None) -> List[str]:
         self._cups_placed = 0
         self._index = index
         b = SpawnBoundary([self._cups_boundary])
@@ -39,23 +39,10 @@ class PlaceCups(Task):
             0, self._move_above_next_target)
         self.register_waypoints_should_repeat(self._repeat)
 
-        if index == 0:
-            return ['place 1 cup on the cup holder',
-                    'pick up one cup and put it on the mug tree',
-                    'move 1 mug from the table to the cup holder',
-                    'pick up one cup and slide its handle onto a spoke on the '
-                    'mug holder']
-        else:
-            return ['place %d cups on the cup holder' % (index + 1),
-                    'pick up %d cups and place them on the holder'
-                    % (index + 1),
-                    'move %d cups from the table to the mug tree'
-                    % (index + 1),
-                    'pick up %d mugs and slide their handles onto the cup '
-                    'holder spokes' % (index + 1)]
+        return ['put one mug on the rack']
 
     def variation_count(self) -> int:
-        return 3
+        return 1
 
     def _move_above_next_target(self, waypoint):
         self._w1.set_parent(self._cups[self._cups_placed])

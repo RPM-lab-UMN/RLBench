@@ -33,7 +33,7 @@ class SlideBlockToColorTarget(Task):
                 Dummy('point4e')]
         }
 
-    def init_episode(self, index: int) -> List[str]:
+    def init_episode(self, index: int, seed=None) -> List[str]:
         self._variation_index = index
 
         self.register_success_conditions([
@@ -51,7 +51,7 @@ class SlideBlockToColorTarget(Task):
             self._waypoints[i].set_pose(target_waypoints[i].get_pose())
         self.register_stop_at_waypoint(i+1)
 
-        return ['slide the block to %s target' % (target_color),
+        return ['push the block to the %s area' % (target_color),
                 'slide the block onto the %s square' % (target_color),
                 'push the block until it is sitting on top of the %s target' % (target_color),
                 'slide the block towards the %s plane' % (target_color),

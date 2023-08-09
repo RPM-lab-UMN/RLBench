@@ -54,7 +54,7 @@ class StackCups(Task):
         self.boundary.sample(self.cup3, min_distance=0.05,
                              min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
 
-        return ['stack the other cups on top of the %s cup' % target_color_name,
+        return ['stack the other cups into the %s cup' % target_color_name,
                 'place two of the cups onto the odd cup out',
                 'put the remaining two cups on top of the %s cup'
                 % target_color_name,

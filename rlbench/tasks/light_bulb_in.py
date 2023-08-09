@@ -43,14 +43,7 @@ class LightBulbIn(Task):
                                               ProximitySensor('success')),
                                           NothingGrasped(self.robot.gripper)])
 
-        return ['screw in the %s light bulb' % target_color_name,
-                'screw the light bulb from the %s holder into the lamp'
-                % target_color_name,
-                'pick up the light bulb from the %s stand, lift it up to just '
-                'above the lamp, then screw it down into the lamp in a '
-                'clockwise fashion' % target_color_name,
-                'put the light bulb from the %s casing into the lamp'
-                % target_color_name]
+        return ['put the %s bulb in the lamp' % target_color_name]
 
     def variation_count(self) -> int:
         return len(colors)

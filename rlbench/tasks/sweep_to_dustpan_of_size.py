@@ -12,7 +12,8 @@ DIRT_NUM = 5
 class SweepToDustpanOfSize(Task):
 
     def init_task(self) -> None:
-        self._dustpan_sizes = ['tall', 'short']
+        self._dustpan_sizes = ['large', 'small']
+        self._dustpan_sizes2 = ['tall', 'short']
 
         broom = Shape('broom')
         self.register_graspable_objects([broom])
@@ -27,11 +28,12 @@ class SweepToDustpanOfSize(Task):
                 Dummy('point2c')]
         }
 
-    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         self._variation_index = index
         dustpan_size = self._dustpan_sizes[self._variation_index]
+        dustpan_size2 = self._dustpan_sizes2[self._variation_index]
 
-        success_sensor = ProximitySensor(f'success_{dustpan_size}')
+        success_sensor = ProximitySensor(f'success_{dustpan_size2}')
         dirts = [Shape('dirt' + str(i)) for i in range(DIRT_NUM)]
         conditions = [DetectedCondition(dirt, success_sensor) for dirt in dirts]
         self.register_success_conditions(conditions)
@@ -44,7 +46,7 @@ class SweepToDustpanOfSize(Task):
             self._waypoints[i].set_pose(target_waypoints[i].get_pose())
         self.register_stop_at_waypoint(2+i+1)
 
-        return ['sweep dirt to the %s dustpan' % (dustpan_size),
+        return ['sweep the dirt to the %s dustpan' % (dustpan_size),
                 'sweep the dirt up into the %s dustpan' % (dustpan_size),
                 'use the broom to brush the dirt into the %s dustpan' % (dustpan_size),
                 'clean up the dirt with the %s pan' % (dustpan_size)]

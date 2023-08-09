@@ -48,7 +48,7 @@ class PutMoneyInSafe(Task):
                  min_rotation=(0.00, 0.00, 0.00),
                  max_rotation=(0.00, 0.00, +0.5 * np.pi))
 
-        return ['put the money away in the safe on the %s shelf'
+        return ['put the money on the %s shelf'
                 % self.index_dic[index],
                 'leave the money on the %s shelf on the safe'
                 % self.index_dic[index],

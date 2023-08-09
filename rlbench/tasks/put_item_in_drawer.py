@@ -21,14 +21,14 @@ class PutItemInDrawer(Task):
         self._item = Shape('item')
         self.register_graspable_objects([self._item])
 
-    def init_episode(self, index, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index, seed = None) -> List[str]:
         option = self._options[index]
         anchor = self._anchors[index]
         self._waypoint1.set_position(anchor.get_position())
         success_sensor = ProximitySensor('success_' + option)
         self.register_success_conditions(
             [DetectedCondition(self._item, success_sensor)])
-        return ['put the item in the %s drawer' % option,
+        return ['put the block in the %s drawer' % option,
                 'put the block away in the %s drawer' % option,
                 'open the %s drawer and place the block inside of it' % option,
                 'leave the block in the %s drawer' % option]

@@ -16,7 +16,7 @@ class OpenDrawer(Task):
                         for opt in self._options]
         self._waypoint1 = Dummy('waypoint1')
 
-    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         option = self._options[index]
         self._waypoint1.set_position(self._anchors[index].get_position())
         self.register_success_conditions(

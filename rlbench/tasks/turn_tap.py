@@ -17,7 +17,7 @@ class TurnTap(Task):
         self.left_joint = Joint('left_joint')
         self.right_joint = Joint('right_joint')
 
-    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         option = OPTIONS[index]
         if option == 'right':
             self.left_start.set_position(self.right_start.get_position())
@@ -30,7 +30,7 @@ class TurnTap(Task):
             self.register_success_conditions(
                 [JointCondition(self.left_joint, 1.57)])
 
-        return ['turn %s tap' % option,
+        return ['turn the %s tap' % option,
                 'rotate the %s tap' % option,
                 'grasp the %s tap and turn it' % option]
 

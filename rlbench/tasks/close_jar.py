@@ -19,7 +19,7 @@ class CloseJar(Task):
         self.boundary = Shape('spawn_boundary')
         self.conditions = [NothingGrasped(self.robot.gripper)]
 
-    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         b = SpawnBoundary([self.boundary])
         for obj in self.jars:
             b.sample(obj, min_distance=0.01)
@@ -41,12 +41,7 @@ class CloseJar(Task):
         self.jars[other_index[index % 2]].set_color(distractor_color_rgb)
         self.conditions += [DetectedCondition(self.lid, success)]
         self.register_success_conditions(self.conditions)
-        return ['close the %s jar' % target_color_name,
-                'screw on the %s jar lid' % target_color_name,
-                'grasping the lid, lift it from the table and use it to seal '
-                'the %s jar' % target_color_name,
-                'pick up the lid from the table and put it on the %s jar'
-                % target_color_name]
+        return ['close the %s jar' % target_color_name]
 
     def variation_count(self) -> int:
         return len(colors)

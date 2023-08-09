@@ -18,7 +18,7 @@ class MeatOffGrill(Task):
         self._w1 = Dummy('waypoint1')
         self._w1z= self._w1.get_position()[2]
 
-    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         conditions = [NothingGrasped(self.robot.gripper)]
         if index == 0:
             x, y, _ = self._chicken.get_position()
@@ -31,10 +31,7 @@ class MeatOffGrill(Task):
             conditions.append(
                 DetectedCondition(self._steak, self._success_sensor))
         self.register_success_conditions(conditions)
-        return ['take the %s off the grill' % MEAT[index],
-                'pick up the %s and place it next to the grill' % MEAT[index],
-                'remove the %s from the grill and set it down to the side'
-                % MEAT[index]]
+        return ['take the %s off the grill' % MEAT[index]]
 
     def variation_count(self) -> int:
         return 2

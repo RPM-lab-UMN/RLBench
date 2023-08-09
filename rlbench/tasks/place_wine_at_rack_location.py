@@ -14,6 +14,7 @@ class PlaceWineAtRackLocation(Task):
         self.wine_bottle = Shape('wine_bottle')
         self.register_graspable_objects([self.wine_bottle])
 
+        self.locations2 = ['middle', 'far side', 'near side']
         self.locations = ['middle', 'left', 'right']
 
         self.register_waypoint_ability_start(3, self._move_to_rack)
@@ -30,12 +31,9 @@ class PlaceWineAtRackLocation(Task):
             [DetectedCondition(self.wine_bottle, 
                 ProximitySensor(f'success_{location}')),
             NothingGrasped(self.robot.gripper)])
-
-        return ['stack the wine bottle to the %s of the rack' % (location),
-                'slide the bottle onto the %s part of the rack' % (location),
-                'put the wine on the %s' % (location),
-                'leave the wine on the %s section of the shelf' % (location),
-                'grasp the bottle and put it away on the %s' % (location)]
+        
+        location = self.locations2[self._variation_index]
+        return ['put the bottle on the %s of the rack' % (location)]
     
     def _move_to_rack(self, _):
         next1, next2 = Dummy('waypoint3'), Dummy('waypoint4')
