@@ -9,7 +9,7 @@ from rlbench.backend.task import Task
 from rlbench.backend.spawn_boundary import SpawnBoundary
 from rlbench.backend.conditions import JointCondition, ConditionSet
 
-MAX_TARGET_BUTTONS = 3
+MAX_TARGET_BUTTONS = 1
 MAX_VARIATIONS = 50
 
 # button top plate and wrapper will be be red before task completion
@@ -78,7 +78,16 @@ class PushButtons(Task):
         # For each color permutation, we want to have 1, 2 or 3 buttons pushed
         color_index = int(index / MAX_TARGET_BUTTONS)
         self.buttons_to_push = 1 + index % MAX_TARGET_BUTTONS
-        button_colors = color_permutations[color_index]
+        button_colors = []
+        # first button color is index
+        button_colors.append(colors[color_index])
+        # second and third are random different colors
+        spare_colors = list(set(colors) - set([colors[color_index]]))
+        color_choice_indexes = np.random.choice(range(len(spare_colors)),
+                                                size=2,
+                                                replace=False)
+        for i in range(2):
+            button_colors.append(spare_colors[color_choice_indexes[i]])
 
         self.color_names = []
         self.color_rgbs = []
@@ -140,8 +149,9 @@ class PushButtons(Task):
         return [rtn0, rtn1, rtn2]
 
     def variation_count(self) -> int:
-        return np.minimum(
-            len(color_permutations) * MAX_TARGET_BUTTONS, MAX_VARIATIONS)
+        # return np.minimum(
+            # len(color_permutations) * MAX_TARGET_BUTTONS, MAX_VARIATIONS)
+        return len(colors)
 
     def step(self) -> None:
         for i in range(len(self.target_buttons)):

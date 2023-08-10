@@ -59,8 +59,9 @@ class StackBlocks(Task):
         b = SpawnBoundary(self.boundaries)
         for block in self.target_blocks + self.distractors:
             b.sample(block, min_distance=0.1)
-
-        return ['stack %d %s blocks on the platform' % (self.blocks_to_stack, color_name),
+        if self.blocks_to_stack == 2:
+            blocks_to_stack = 'two'
+        return ['stack %s %s blocks on the platform' % (blocks_to_stack, color_name),
                 'place %d of the %s cubes on top of each other'
                 % (self.blocks_to_stack, color_name),
                 'pick up and set down %d %s blocks on top of each other'
