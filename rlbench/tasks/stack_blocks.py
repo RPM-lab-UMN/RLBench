@@ -61,6 +61,10 @@ class StackBlocks(Task):
             b.sample(block, min_distance=0.1)
         if self.blocks_to_stack == 2:
             blocks_to_stack = 'two'
+        elif self.blocks_to_stack == 3:
+            blocks_to_stack = 'three'
+        else:
+            blocks_to_stack = 'four'
         return ['stack %s %s blocks on the platform' % (blocks_to_stack, color_name),
                 'place %d of the %s cubes on top of each other'
                 % (self.blocks_to_stack, color_name),
