@@ -45,9 +45,11 @@ class PutMoneyInSafeMotions(Task):
         b.sample(self.money,
                  min_rotation=(0.00, 0.00, 0.00),
                  max_rotation=(0.00, 0.00, +0.5 * np.pi))
+        for _ in range(3):
+            self.pyrep.step()
 
         if index == 0:
-            text = 'move in front of the money'
+            text = 'move above the money'
             # gripper open
             while self.robot.gripper.get_open_amount()[0] < 0.99:
                 self.robot.gripper.actuate(1, velocity=0.1)

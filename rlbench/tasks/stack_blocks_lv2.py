@@ -35,8 +35,8 @@ class StackBlocksLv2(Task):
 
     def init_episode(self, index: int, seed=None) -> List[str]:
         # For each color, we want 1 block on the platform TODO
-        color_index = int(index / MAX_STACKED_BLOCKS)
-        self.blocks_to_stack = 2 + index % MAX_STACKED_BLOCKS
+        color_index = index
+        self.blocks_to_stack = 1
         color_name, color_rgb = colors[color_index]
         for b in self.target_blocks:
             b.set_color(color_rgb)
@@ -59,26 +59,11 @@ class StackBlocksLv2(Task):
         b = SpawnBoundary(self.boundaries)
         for block in self.target_blocks + self.distractors:
             b.sample(block, min_distance=0.1)
-        if self.blocks_to_stack == 2:
-            blocks_to_stack = 'two'
-        elif self.blocks_to_stack == 3:
-            blocks_to_stack = 'three'
-        else:
-            blocks_to_stack = 'four'
-        return ['stack %s %s blocks on the platform' % (blocks_to_stack, color_name),
-                'place %d of the %s cubes on top of each other'
-                % (self.blocks_to_stack, color_name),
-                'pick up and set down %d %s blocks on top of each other'
-                % (self.blocks_to_stack, color_name),
-                'build a tall tower out of %d %s cubes'
-                % (self.blocks_to_stack, color_name),
-                'arrange %d %s blocks in a vertical stack on the table top'
-                % (self.blocks_to_stack, color_name),
-                'set %d %s cubes on top of each other'
-                % (self.blocks_to_stack, color_name)]
+
+        return ['stack one %s block on the platform' % color_name]
 
     def variation_count(self) -> int:
-        return len(colors) * MAX_STACKED_BLOCKS
+        return len(colors)
 
     def _move_above_next_target(self, _):
         if self.blocks_stacked >= self.blocks_to_stack:
