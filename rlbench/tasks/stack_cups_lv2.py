@@ -4,7 +4,7 @@ from pyrep.objects.shape import Shape
 from pyrep.objects.proximity_sensor import ProximitySensor
 from rlbench.const import colors
 from rlbench.backend.task import Task
-from rlbench.backend.conditions import DetectedCondition, NothingGrasped
+from rlbench.backend.conditions import DetectedCondition, NothingGrasped, OrConditions
 from rlbench.backend.spawn_boundary import SpawnBoundary
 
 
@@ -22,11 +22,13 @@ class StackCupsLv2(Task):
         self.boundary = SpawnBoundary([Shape('boundary')])
 
         self.register_graspable_objects([self.cup1, self.cup2, self.cup3])
+        conditions = [DetectedCondition(self.cup1, success_sensor), 
+                      DetectedCondition(self.cup3, success_sensor)]
+
         self.register_success_conditions([
-            DetectedCondition(self.cup1, success_sensor),
-            DetectedCondition(self.cup3, success_sensor),
+            OrConditions(conditions),
             NothingGrasped(self.robot.gripper)
-        ]) # TODO left cup only
+        ])
 
     def init_episode(self, index: int, seed=None) -> List[str]:
         self.variation_index = index
@@ -53,7 +55,7 @@ class StackCupsLv2(Task):
                              min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
         self.boundary.sample(self.cup3, min_distance=0.05,
                              min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
-
+        
         return ['stack a cup into the %s cup' % target_color_name]
 
     def variation_count(self) -> int:
