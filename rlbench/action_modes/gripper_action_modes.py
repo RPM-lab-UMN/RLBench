@@ -56,7 +56,7 @@ class Discrete(GripperActionMode):
             raise InvalidActionError(
                 'Gripper action expected to be within 0 and 1.')
         open_condition = all(
-            x > 0.98 for x in scene.robot.gripper.get_open_amount())
+            x > 0.975 for x in scene.robot.gripper.get_open_amount())
         current_ee = 1.0 if open_condition else 0.0
         action = float(action[0] > 0.5)
 
