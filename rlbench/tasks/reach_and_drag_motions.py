@@ -37,7 +37,15 @@ class ReachAndDragMotions(Task):
         _, distractor3_rgb = colors[(index + 7) % len(colors)]
         self.distractor3.set_color(distractor3_rgb)
 
-        return ['move above the stick']
+        text = ['0', '1', '2', '3', '4', '5']
+        text[0] = 'move above the stick'
+        text[1] = 'approach the stick'
+        text[2] = 'go over the stick'
+        text[3] = 'point the gripper at the stick from above'
+        text[4] = 'go above the stick'
+        text[5] = 'prepare to grasp the stick'
+
+        return text
 
     def variation_count(self) -> int:
         return len(colors)

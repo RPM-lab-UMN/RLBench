@@ -48,8 +48,14 @@ class PutMoneyInSafeMotions(Task):
         for _ in range(3):
             self.pyrep.step()
 
+        text = ['0', '1', '2', '3', '4', '5']
         if index == 0:
-            text = 'move above the money'
+            text[0] = 'move above the money'
+            text[1] = 'approach the money'
+            text[2] = 'go over the money'
+            text[3] = 'point the gripper at the money from above'
+            text[4] = 'go above the money'
+            text[5] = 'move above the stack of bills'
             # gripper open
             while self.robot.gripper.get_open_amount()[0] < 0.99:
                 self.robot.gripper.actuate(1, velocity=0.1)
@@ -57,7 +63,29 @@ class PutMoneyInSafeMotions(Task):
             # set waypoint 0 pose to money pose
             self.w0.set_pose(self.w_money.get_pose())
         else:
-            text = 'move in front of the %s shelf' % self.index_dic[self.target_shelf]
+            shelf = self.index_dic[self.target_shelf]
+            if shelf == 'bottom':
+                text[0] = 'move in front of the bottom shelf'
+                text[1] = 'approach the lowest shelf'
+                text[2] = 'go to the front of the bottom shelf'
+                text[3] = 'point the gripper at the lower shelf from the front'
+                text[4] = 'move in front of the lowest shelf'
+                text[5] = 'move in front of the bottommost shelf'
+            elif shelf == 'middle':
+                text[0] = 'move in front of the middle shelf'
+                text[1] = 'approach the center shelf'
+                text[2] = 'go to the front of the middle shelf'
+                text[3] = 'point the gripper at the center shelf from the front'
+                text[4] = 'go in front of the middle shelf'
+                text[5] = 'align the gripper in front of the middle shelf'
+            elif shelf == 'top':
+                text[0] = 'move in front of the top shelf'
+                text[1] = 'approach the top shelf'
+                text[2] = 'go to the front of the top shelf'
+                text[3] = 'point the gripper at the top shelf from the front'
+                text[4] = 'go in front of the top shelf'
+                text[5] = 'move in front of the topmost shelf'
+
             # gipper closed
             while self.robot.gripper.get_open_amount()[0] > 0.01:
                 self.robot.gripper.actuate(0, velocity=0.1)
@@ -65,7 +93,7 @@ class PutMoneyInSafeMotions(Task):
             # set waypoint 0 pose to shelf pose
             self.w0.set_pose(self.w_shelf.get_pose())
 
-        return [text]
+        return text
 
     def variation_count(self) -> int:
         # 1 move in front of the money

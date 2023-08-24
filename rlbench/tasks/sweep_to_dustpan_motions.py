@@ -32,10 +32,18 @@ class SweepToDustpanMotions(Task):
             DetectedCondition(self.tip, self.sensor)
         ])
 
-    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         self.register_stop_at_waypoint(1)
 
-        return ['move in front of the broom']
+        text = ['0', '1', '2', '3', '4', '5']
+        text[0] = 'move in front of the broom'
+        text[1] = 'approach the broom handle'
+        text[2] = 'go near the broom'
+        text[3] = 'point the gripper at the broom'
+        text[4] = 'move in front of the broom handle'
+        text[5] = 'move next to the broom handle'
+
+        return text
 
     def variation_count(self) -> int:
         return 1

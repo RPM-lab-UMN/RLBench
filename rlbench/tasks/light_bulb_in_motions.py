@@ -1,6 +1,6 @@
 from typing import List
 from rlbench.backend.task import Task
-from rlbench.const import colors
+from rlbench.const import colors, alt_colors
 from rlbench.backend.conditions import NothingGrasped, DetectedCondition
 from rlbench.backend.spawn_boundary import SpawnBoundary
 import numpy as np
@@ -30,7 +30,6 @@ class LightBulbInMotions(Task):
     def init_episode(self, index: int, seed=None) -> List[str]:
         if index >= len(colors):
             lamp = True
-            text = 'move above the lamp'
             # gripper should be closed above the lamp
             while self.robot.gripper.get_open_amount()[0] > 0.01:
                 self.robot.gripper.actuate(0, velocity=0.1)
@@ -52,6 +51,7 @@ class LightBulbInMotions(Task):
                              relative_to=self.bulb_glass_visual[index % 2],
                              reset_dynamics=False)
         target_color_name, target_color_rgb = colors[index]
+        alt_color_name = alt_colors[index]
         color_choice = np.random.choice(
             list(range(index)) + list(
                 range(index + 1, len(colors))),
@@ -61,18 +61,31 @@ class LightBulbInMotions(Task):
         other_index = {0: 1, 1: 0}
         self.holders[other_index[index % 2]].set_color(distractor_color_rgb)
 
+        text = ['0', '1', '2', '3', '4', '5']
         if lamp:
+            text[0] = 'move above the lamp'
+            text[1] = 'approach the lamp socket'
+            text[2] = 'go over the lamp socket'
+            text[3] = 'point the gripper at the socket from above'
+            text[4] = 'go above the lamp socket'
+            text[5] = 'move above the light fixture'
             # set waypoint0 above the lamp
             base = Shape('lamp_base')
             target_pos = base.get_position()
             self.w0.set_position([target_pos[0], target_pos[1], target_pos[2] + 0.4])
         else:
-            text = 'move above the %s bulb' % target_color_name
+            text[0] = 'move above the %s bulb' % target_color_name
+            text[1] = 'approach the %s bulb' % alt_color_name
+            text[2] = 'go over the %s bulb' % target_color_name
+            text[3] = 'point the gripper at the %s bulb from above' % alt_color_name
+            text[4] = 'go above the %s bulb' % target_color_name
+            text[5] = 'move above the %s lightbulb' % target_color_name
+
             # set waypoint0 above the target bulb
             target_pos = self.bulb_glass_visual[index % 2].get_position()
             self.w0.set_position([target_pos[0], target_pos[1], target_pos[2] + 0.1])
 
-        return [text]
+        return text
 
     def variation_count(self) -> int:
         return len(colors) * 2 # move above the lamp for each color

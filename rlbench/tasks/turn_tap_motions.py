@@ -24,7 +24,7 @@ class TurnTapMotions(Task):
             DetectedCondition(self.tip, self.sensor)
         ])
 
-    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         option = OPTIONS[index]
         if option == 'right':
             self.left_start.set_position(self.right_start.get_position())
@@ -32,7 +32,23 @@ class TurnTapMotions(Task):
             self.left_end.set_position(self.right_end.get_position())
             self.left_end.set_orientation(self.right_end.get_orientation())
 
-        return ['move to the %s tap' % option]
+        text = ['0', '1', '2', '3', '4', '5']
+        if option == 'left':
+            text[0] = 'move to the left tap'
+            text[1] = 'approach the left handle'
+            text[2] = 'go to the left tap'
+            text[3] = 'prepare to turn the left tap'
+            text[4] = 'move to the left handle'
+            text[5] = 'move to the left valve'
+        elif option == 'right':
+            text[0] = 'move to the right tap'
+            text[1] = 'approach the right handle'
+            text[2] = 'go to the right tap'
+            text[3] = 'prepare to turn the right tap'
+            text[4] = 'move to the right handle'
+            text[5] = 'move to the right valve'
+
+        return text
 
     def variation_count(self) -> int:
         return 2

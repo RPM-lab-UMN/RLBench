@@ -16,7 +16,7 @@ class SlideBlockMotions(Task):
         self.tip = Dummy('Panda_tip')
         self.waypoint0 = Dummy('waypoint0')
 
-    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         direction = self.directions[index]
         # select the correct success sensor
         positions = []
@@ -49,7 +49,37 @@ class SlideBlockMotions(Task):
             self.robot.gripper.actuate(0, velocity=0.1)
             self.pyrep.step()
 
-        return ['move %s the block' % (direction)]
+        text = ['0', '1', '2', '3', '4', '5']
+        if direction == 'in front of':
+            text[0] = 'move in front of the block'
+            text[1] = 'go to the front side of the cube'
+            text[2] = 'approach the block from the front'
+            text[3] = 'move in front of the cube'
+            text[4] = 'approach the front of the block'
+            text[5] = 'move near the front of the block'
+        elif direction == 'behind':
+            text[0] = 'move behind the block'
+            text[1] = 'go to the back side of the cube'
+            text[2] = 'approach the block from the back'
+            text[3] = 'move behind the cube'
+            text[4] = 'approach the back of the block'
+            text[5] = 'move near the back of the block'
+        elif direction == 'left of':
+            text[0] = 'move left of the block'
+            text[1] = 'go to the left side of the cube'
+            text[2] = 'approach the block from the left'
+            text[3] = 'move to the left of the cube'
+            text[4] = 'approach the left side of the block'
+            text[5] = 'move near the left side of the block'
+        elif direction == 'right of':
+            text[0] = 'move right of the block'
+            text[1] = 'go to the right side of the cube'
+            text[2] = 'approach the block from the right'
+            text[3] = 'move to the right of the cube'
+            text[4] = 'approach the right side of the block'
+            text[5] = 'move near the right side of the block'
+
+        return text
 
     def variation_count(self) -> int:
         return 4

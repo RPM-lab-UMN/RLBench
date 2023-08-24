@@ -33,6 +33,29 @@ colors = [
     ('white', (1.0, 1.0, 1.0)),
 ]
 
+alt_colors = [
+    'scarlet',
+    'dark red',
+    'bright green',
+    'dark green',
+    'royal blue',
+    'dark blue',
+    'canary yellow',
+    'turquoise',
+    'bright pink',
+    'light gray',
+    'dark gray',
+    'tangerine',
+    'sage',
+    'plum',
+    'jade',
+    'sky blue',
+    'lavender',
+    'pink',
+    'charcoal',
+    'ivory'
+]
+
 # Arms from PyRep need to be modified to include a wrist camera.
 # Currently, only the arms/grippers below are supported.
 SUPPORTED_ROBOTS = {

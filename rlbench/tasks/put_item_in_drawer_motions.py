@@ -21,8 +21,16 @@ class PutItemInDrawerMotions(Task):
             DetectedCondition(self.tip, self.sensor)
         ])
 
-    def init_episode(self, index, seed = None, interactive=False) -> List[str]:
-        return ['move above the block']
+    def init_episode(self, index, seed = None) -> List[str]:
+        text = ['0', '1', '2', '3', '4', '5']
+        text[0] = 'move above the block'
+        text[1] = 'approach the block'
+        text[2] = 'go over the block'
+        text[3] = 'point the gripper at the block from above'
+        text[4] = 'go above the block'
+        text[5] = 'move above the cube'
+        
+        return text
 
     def variation_count(self) -> int:
         return 1

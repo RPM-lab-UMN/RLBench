@@ -1,3 +1,4 @@
+from curses.ascii import alt
 from typing import List
 import numpy as np
 from pyrep.objects.shape import Shape
@@ -7,7 +8,7 @@ from rlbench.backend.task import Task
 from rlbench.backend.conditions import DetectedCondition
 from rlbench.backend.conditions import NothingGrasped
 from rlbench.backend.spawn_boundary import SpawnBoundary
-from rlbench.const import colors
+from rlbench.const import colors, alt_colors
 
 MAX_STACKED_BLOCKS = 3
 DISTRACTORS = 4
@@ -46,6 +47,7 @@ class StackBlocksMotions(Task):
         color_index = int(index / MAX_STACKED_BLOCKS)
         self.blocks_to_stack = 2 + index % MAX_STACKED_BLOCKS
         color_name, color_rgb = colors[color_index]
+        alt_color_name = alt_colors[color_index]
         for b in self.target_blocks:
             b.set_color(color_rgb)
 
@@ -67,9 +69,16 @@ class StackBlocksMotions(Task):
         while self.robot.gripper.get_open_amount()[0] < 0.99:
             self.robot.gripper.actuate(1, velocity=0.1)
             self.pyrep.step()
+
+        text = ['0', '1', '2', '3', '4', '5']
         if index % 3 == 0:
             # go for left
-            text = 'move above the left %s block' % color_name
+            text[0] = 'move above the left %s block' % color_name
+            text[1] = 'approach the left %s block' % alt_color_name
+            text[2] = 'go over the left %s block' % color_name
+            text[3] = 'point the gripper at the left %s block from above' % alt_color_name
+            text[4] = 'go above the left %s block' % color_name
+            text[5] = 'prepare to grasp the left %s block' % color_name
             # put waypoint0 above the leftmost target block
             # get the index of the largest y
             left_index = np.argmax(target_block_ys)
@@ -79,7 +88,12 @@ class StackBlocksMotions(Task):
             self.w0.set_position([pose[0], pose[1], pose[2]+0.1])
         elif index % 3 == 1:
             # go for right
-            text = 'move above the right %s block' % color_name
+            text[0] = 'move above the right %s block' % color_name
+            text[1] = 'approach the right %s block' % alt_color_name
+            text[2] = 'go over the right %s block' % color_name
+            text[3] = 'point the gripper at the right %s block from above' % alt_color_name
+            text[4] = 'go above the right %s block' % color_name
+            text[5] = 'prepare to grasp the right %s block' % color_name
             # put waypoint0 above the rightmost target block
             # get the index of the largest y
             right_index = np.argmin(target_block_ys)
@@ -89,7 +103,12 @@ class StackBlocksMotions(Task):
             self.w0.set_position([pose[0], pose[1], pose[2]+0.1])
         else:
             # go for platform
-            text = 'move above the platform'
+            text[0] = 'move above the platform'
+            text[1] = 'approach the platform'
+            text[2] = 'go over the platform'
+            text[3] = 'point the gripper at the platform from above'
+            text[4] = 'go above the platform'
+            text[5] = 'align the gripper above the platform'
             # gripper closed
             while self.robot.gripper.get_open_amount()[0] > 0.01:
                 self.robot.gripper.actuate(0, velocity=0.1)
@@ -100,7 +119,7 @@ class StackBlocksMotions(Task):
             # move waypoint0 up
             self.w0.set_position([pose[0], pose[1], pose[2]+0.2])
 
-        return [text] 
+        return text
 
     def variation_count(self) -> int:
         return len(colors) * 3 # 3 for left, right, platform

@@ -1,3 +1,4 @@
+from re import M
 from typing import List
 from pyrep.objects.dummy import Dummy
 from pyrep.objects.proximity_sensor import ProximitySensor
@@ -23,7 +24,7 @@ class MeatOffGrillMotions(Task):
             DetectedCondition(self.tip, self._success_sensor)
         ])
 
-    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         if index == 0:
             x, y, _ = self._chicken.get_position()
             self._w1.set_position([x, y, self._w1z])
@@ -32,7 +33,23 @@ class MeatOffGrillMotions(Task):
             x, y, _ = self._steak.get_position()
             self._w1.set_position([x, y, self._w1z])
 
-        return ['move above the %s' % MEAT[index]]
+        text = ['0', '1', '2', '3', '4', '5']
+        if MEAT[index] == 'chicken':
+            text[0] = 'move above the chicken'
+            text[1] = 'approach the chicken'
+            text[2] = 'go over the chicken'
+            text[3] = 'point the gripper at the chicken from above'
+            text[4] = 'go above the chicken'
+            text[5] = 'move above the drumstick'
+        elif MEAT[index] == 'steak':
+            text[0] = 'move above the steak'
+            text[1] = 'approach the steak'
+            text[2] = 'go over the steak'
+            text[3] = 'point the gripper at the steak from above'
+            text[4] = 'go above the steak'
+            text[5] = 'move above the red meat'
+
+        return text
 
     def variation_count(self) -> int:
         return 2

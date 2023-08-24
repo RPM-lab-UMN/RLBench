@@ -22,15 +22,35 @@ class OpenDrawerMotions(Task):
             DetectedCondition(self.tip, self.sensor)
         ])
         
-    def init_episode(self, index: int, seed = None, interactive=False) -> List[str]:
+    def init_episode(self, index: int, seed = None) -> List[str]:
         option = self._options[index]
         self._waypoint0.set_position(self._anchors[index].get_position())
-        return ['move in front of the %s handle' % option]
-        # 1 move in front of the top handle
-        # 2 go in front of the upper handle
-        # 3 approach the highest handle from the front
-        # 4 align the gripper in front of the top handle
-        # 5 advance the arm toward the upper handle
+        # language augmentation
+        text = ['0', '1', '2', '3', '4', '5']
+        if option == 'bottom':
+            text[0] = 'move in front of the bottom handle'
+            text[1] = 'approach the lowest drawer'
+            text[2] = 'go near the lower handle'
+            text[3] = 'point the gripper at the bottom handle'
+            # unseen combo
+            text[4] = 'move in front of the lowest handle'
+            # unseen word
+            text[5] = 'move in front of the bottommost handle'
+        elif option == 'middle':
+            text[0] = 'move in front of the middle handle'
+            text[1] = 'approach the center drawer'
+            text[2] = 'go near the middle handle'
+            text[3] = 'point the gripper at the middle handle'
+            text[4] = 'move in front of the center handle'
+            text[5] = 'move in front of the handle second from the top'
+        elif option == 'top':
+            text[0] = 'move in front of the top handle'
+            text[1] = 'approach the highest drawer'
+            text[2] = 'go near the upper handle'
+            text[3] = 'point the gripper at the top handle'
+            text[4] = 'move in front of the highest handle'
+            text[5] = 'move in front of the topmost handle'
+        return text
 
     def variation_count(self) -> int:
         return 3
