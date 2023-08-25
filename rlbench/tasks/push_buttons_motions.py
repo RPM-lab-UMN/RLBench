@@ -151,7 +151,15 @@ class PushButtonsMotions(Task):
             self.robot.gripper.actuate(0, velocity=0.1)
             self.pyrep.step()
 
-        return ['move above the %s button' % self.color_names[0]]
+        text = ['0', '1', '2', '3', '4', '5']
+        text[0] = 'move above the %s button' % self.color_names[0]
+        text[1] = 'approach the %s button' % self.color_names[0]
+        text[2] = 'go above the %s button' % self.color_names[0]
+        text[3] = 'point the gripper at the %s button from above' % self.color_names[0]
+        text[4] = 'go above the %s button' % self.color_names[0]
+        text[5] = 'position the gripper above the %s button' % self.color_names[0]
+
+        return text
 
     def variation_count(self) -> int:
         return len(colors)

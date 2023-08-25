@@ -40,7 +40,6 @@ class PutGroceriesInCupboardMotions(Task):
 
     def init_episode(self, index: int, seed=None) -> List[str]:
         if index == 0:
-            text = 'move in front of the cupboard'
             cupboard = True
         else:
             cupboard = False
@@ -50,7 +49,14 @@ class PutGroceriesInCupboardMotions(Task):
         [self.boundary.sample(g, min_distance=0.1) for g in self.groceries]
         self.waypoint1.set_pose(self.grasp_points[index].get_pose())
 
+        text = ['0', '1', '2', '3', '4', '5']
         if cupboard:
+            text[0] = 'move in front of the cupboard'
+            text[1] = 'approach the cupboard'
+            text[2] = 'go in front of the cupboard'
+            text[3] = 'point the gripper at the cupboard from the front'
+            text[4] = 'go in front of the cupboard'
+            text[5] = 'align to the cupboard'
             # move waypoint 0 to cupboard
             w_cupboard = Dummy('waypoint3')
             self.w0.set_pose(w_cupboard.get_pose())
@@ -59,8 +65,13 @@ class PutGroceriesInCupboardMotions(Task):
                 self.robot.gripper.actuate(0, velocity=0.1)
                 self.pyrep.step()
         else:
+            text[0] = 'move above the %s' % GROCERY_NAMES[index]
+            text[1] = 'approach the %s' % GROCERY_NAMES[index]
+            text[2] = 'go over the %s' % GROCERY_NAMES[index]
+            text[3] = 'point the gripper at the %s from above' % GROCERY_NAMES[index]
+            text[4] = 'go above the %s' % GROCERY_NAMES[index]
+            text[5] = 'prepare to grasp the %s' % GROCERY_NAMES[index]
             # move waypoint 0 to grocery
-            text = 'move above the %s' % GROCERY_NAMES[index]
             w_grocery = Dummy('waypoint_grocery')
             self.w0.set_pose(w_grocery.get_pose())
             # gripper open
@@ -68,7 +79,7 @@ class PutGroceriesInCupboardMotions(Task):
                 self.robot.gripper.actuate(1, velocity=0.1)
                 self.pyrep.step()
 
-        return [text]
+        return text
 
     def variation_count(self) -> int:
         return len(GROCERY_NAMES) + 1 # +1 for move in front of the cupboard

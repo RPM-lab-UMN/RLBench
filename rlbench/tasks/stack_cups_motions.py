@@ -1,8 +1,9 @@
+from curses.ascii import alt
 from typing import List, Tuple
 import numpy as np
 from pyrep.objects.shape import Shape
 from pyrep.objects.proximity_sensor import ProximitySensor
-from rlbench.const import colors
+from rlbench.const import colors, alt_colors
 from rlbench.backend.task import Task
 from rlbench.backend.conditions import DetectedCondition, NothingGrasped
 from rlbench.backend.spawn_boundary import SpawnBoundary
@@ -39,6 +40,7 @@ class StackCupsMotions(Task):
 
         self.variation_index = index
         target_color_name, target_rgb = colors[index]
+        alt_color_name = alt_colors[index]
 
         random_idx1 = np.random.choice(len(colors))
         while random_idx1 == index:
@@ -62,8 +64,14 @@ class StackCupsMotions(Task):
         self.boundary.sample(self.cup3, min_distance=0.05,
                              min_rotation=(0, 0, 0), max_rotation=(0, 0, 0))
         
+        text = ['0', '1', '2', '3', '4', '5']
         if alot:
-            text = 'move a lot above the left edge of the %s cup' % target_color_name
+            text[0] = 'move a lot above the left edge of the %s cup' % target_color_name
+            text[1] = 'approach far above the left side of the %s cup' % alt_color_name
+            text[2] = 'go a lot above the left edge of the %s cup' % target_color_name
+            text[3] = 'point the gripper at the left side of the %s cup from far above' % alt_color_name
+            text[4] = 'go far above the left edge of the %s cup' % target_color_name
+            text[5] = 'align high above the left edge of the %s cup' % target_color_name
             # set waypoint 0 pose to waypoint_alot_above pose
             w_alot_above = Dummy('waypoint_alot_above')
             self.w0.set_pose(w_alot_above.get_pose())
@@ -72,7 +80,12 @@ class StackCupsMotions(Task):
                 self.robot.gripper.actuate(0, velocity=0.1)
                 self.pyrep.step()
         else:
-            text = 'move above the left edge of the %s cup' % target_color_name
+            text[0] = 'move above the left edge of the %s cup' % target_color_name
+            text[1] = 'approach the left side of the %s cup' % alt_color_name
+            text[2] = 'go over the left edge of the %s cup' % target_color_name
+            text[3] = 'point the gripper at the left side of the %s cup from above' % alt_color_name
+            text[4] = 'go above the left edge of the %s cup' % target_color_name
+            text[5] = 'align above the left edge of the %s cup' % target_color_name
             # set waypoint 0 pose to waypoint_above pose
             w_above = Dummy('waypoint_above')
             self.w0.set_pose(w_above.get_pose())
@@ -81,7 +94,7 @@ class StackCupsMotions(Task):
                 self.robot.gripper.actuate(1, velocity=0.1)
                 self.pyrep.step()
 
-        return [text]
+        return text
 
     def variation_count(self) -> int:
         return len(colors) * 2
