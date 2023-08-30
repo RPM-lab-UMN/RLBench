@@ -136,6 +136,9 @@ class Scene(object):
             try:
                 if (randomly_place and
                         not self.task.is_static_workspace()):
+                    # set seed before placing task
+                    if seed is not None:
+                        np.random.seed(seed)
                     self._place_task()
                     if seed is not None:
                         descriptions = self.task.init_episode(index, seed)

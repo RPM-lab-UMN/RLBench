@@ -6,6 +6,7 @@ from pyrep.objects.proximity_sensor import ProximitySensor
 from rlbench.backend.task import Task
 from rlbench.backend.conditions import DetectedCondition, NothingGrasped
 from rlbench.backend.spawn_boundary import SpawnBoundary
+import numpy as np
 
 GROCERY_NAMES = [
     'crackers',
@@ -39,6 +40,12 @@ class PutGroceriesInCupboardMotions(Task):
         ])
 
     def init_episode(self, index: int, seed=None) -> List[str]:
+        # set random seed
+        if seed is not None:
+            np.random.seed(seed)
+        else:
+            print('no seed!')
+
         if index == 0:
             cupboard = True
         else:

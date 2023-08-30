@@ -28,6 +28,12 @@ class LightBulbInMotions(Task):
         ])
 
     def init_episode(self, index: int, seed=None) -> List[str]:
+        # set random seed
+        if seed is not None:
+            np.random.seed(seed)
+        else:
+            print('no seed!')
+
         if index >= len(colors):
             lamp = True
             # gripper should be closed above the lamp

@@ -79,6 +79,12 @@ class PushButtonsMotions(Task):
         ])
 
     def init_episode(self, index: int, seed=None) -> List[str]:
+        # set random seed
+        if seed is not None:
+            np.random.seed(seed)
+        else:
+            print('no seed!')
+            
         for tp in self.target_topPlates:
             tp.set_color([1.0, 0.0, 0.0])
         for w in self.target_wraps:

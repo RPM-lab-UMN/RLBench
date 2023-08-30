@@ -34,6 +34,12 @@ class PutMoneyInSafeMotions(Task):
         self.w_shelf = Dummy('waypoint_shelf')
 
     def init_episode(self, index: int, seed=None) -> List[str]:
+        # set random seed
+        if seed is not None:
+            np.random.seed(seed)
+        else:
+            print('no seed!')
+            
         self.target_shelf = index % NUM_SHELVES_IN_SAFE
         w4 = Dummy('waypoint4')
         target_dummy_name = 'dummy_shelf' + str(self.target_shelf)

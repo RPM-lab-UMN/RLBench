@@ -23,6 +23,12 @@ class OpenDrawerMotions(Task):
         ])
         
     def init_episode(self, index: int, seed = None) -> List[str]:
+        # set random seed
+        if seed is not None:
+            np.random.seed(seed)
+        else:
+            print('no seed!')
+
         option = self._options[index]
         self._waypoint0.set_position(self._anchors[index].get_position())
         # language augmentation

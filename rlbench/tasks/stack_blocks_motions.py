@@ -43,6 +43,12 @@ class StackBlocksMotions(Task):
         self.target_plane = Shape('stack_blocks_target_plane')
 
     def init_episode(self, index: int, seed=None) -> List[str]:
+        # set random seed
+        if seed is not None:
+            np.random.seed(seed)
+        else:
+            print('no seed!')
+
         # For each color, we want to have 2, 3 or 4 blocks stacked
         color_index = int(index / MAX_STACKED_BLOCKS)
         self.blocks_to_stack = 2 + index % MAX_STACKED_BLOCKS
