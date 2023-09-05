@@ -78,8 +78,7 @@ class TaskEnvironment(object):
                 randomly_place=not self._static_positions, seed=seed, interactive=interactive)
         except (BoundaryError, WaypointError) as e:
             raise TaskEnvironmentError(
-                'Could not place the task %s in the scene. This should not '
-                'happen, please raise an issues on this task.'
+                'Could not place the task %s in the scene.'
                 % self._task.get_name()) from e
 
         self._reset_called = True
