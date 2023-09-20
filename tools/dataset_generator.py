@@ -23,9 +23,9 @@ from absl import flags
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('save_path',
-                    '/tmp/rlbench_data/',
+                    '/tmp/rlbench_data_2/',
                     'Where to save the demos.')
-flags.DEFINE_list('tasks', ['push_buttons_lv3'],
+flags.DEFINE_list('tasks', ['stack_cups'],
                   'The tasks to collect. If empty, all tasks are collected.')
 flags.DEFINE_list('image_size', [128, 128],
                   'The size of the images tp save.')
@@ -341,7 +341,7 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
     rlbench_env = Environment(
         action_mode=MoveArmThenGripper(JointVelocity(), Discrete()),
         obs_config=obs_config,
-        headless=False)
+        headless=True)
     rlbench_env.launch()
 
     task_env = None
@@ -370,7 +370,7 @@ def run_all_variations(i, lock, task_index, variation_count, results, file_lock,
         abort_variation = False
         idx_offset = 0
         for ex_idx in range(FLAGS.episodes_per_task):
-            attempts = 10
+            attempts = 15
             while attempts > 0:
                 try:
                     variation = ex_idx % possible_variations

@@ -125,20 +125,13 @@ class Scene(object):
         # Try a few times to init and place in the workspace
         attempts = 0
         descriptions = None
-        # if seed is not None:
-        #     np.random.seed(seed)
-        #     print('scene seed', seed)
         while attempts < max_attempts:
-            # if seed is not None:
-            #     descriptions = self.task.init_episode(index, seed, interactive)
-            # else:
-            #     descriptions = self.task.init_episode(index, None, interactive)
+            if seed is not None:
+                np.random.seed(seed) # this should make the seeds in init_episode obsolete
             try:
                 if (randomly_place and
                         not self.task.is_static_workspace()):
                     # set seed before placing task
-                    if seed is not None:
-                        np.random.seed(seed)
                     self._place_task()
                     if seed is not None:
                         descriptions = self.task.init_episode(index, seed)

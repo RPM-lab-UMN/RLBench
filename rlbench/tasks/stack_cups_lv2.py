@@ -31,6 +31,12 @@ class StackCupsLv2(Task):
         ])
 
     def init_episode(self, index: int, seed=None) -> List[str]:
+        # set random seed
+        if seed is not None:
+            np.random.seed(seed)
+        else:
+            print('no seed!')
+
         self.variation_index = index
         target_color_name, target_rgb = colors[index]
 

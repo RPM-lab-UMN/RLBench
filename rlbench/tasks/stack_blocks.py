@@ -34,6 +34,12 @@ class StackBlocks(Task):
         self.register_waypoints_should_repeat(self._repeat)
 
     def init_episode(self, index: int, seed=None) -> List[str]:
+        # set random seed
+        if seed is not None:
+            np.random.seed(seed)
+        else:
+            print('no seed!')
+            
         # For each color, we want to have 2, 3 or 4 blocks stacked
         # cycle two blocks for each color, then 3, then 4
         color_index = int(index % len(colors))
